@@ -9,13 +9,9 @@ FF14 Dalamud plugin that automates Frontline movement and combat.
 
 ## Install (custom repo)
 
-Add this URL in Dalamud → Settings → Experimental → Custom Plugin Repositories:
+`pluginmaster.json` はこのリポジトリ外（別リポジトリ）で管理しています。
 
-```
-https://raw.githubusercontent.com/exatrines/AutoFrontLine/main/pluginmaster.json
-```
-
-Then install **Auto FrontLine** from Available Plugins.
+Dalamud → Settings → Experimental → **Custom Plugin Repositories** に、その `pluginmaster.json` の raw URL を登録し、**Auto FrontLine** をインストールしてください。
 
 ## Build
 
@@ -41,17 +37,19 @@ dotnet build AutoFrontLine.sln -c Release
 2. Commit, tag, and push（`main` だけでは Release は走りません。タグ必須）:
 
    ```bash
-   git add pluginmaster.json AutoFrontLine/AutoFrontLine.json AutoFrontLine/AutoFrontLine.csproj CHANGELOG.md
+   git add AutoFrontLine/AutoFrontLine.json AutoFrontLine/AutoFrontLine.csproj CHANGELOG.md
    git commit -m "Release 1.0.0.0"
    git tag v1.0.0.0
    git push origin main --follow-tags
    ```
 
-3. GitHub Actions **Release** workflow builds `AutoFrontLine.zip` and publishes it to [Releases](https://github.com/exatrines/AutoFrontLine/releases).
+3. 外部リポジトリの **`pluginmaster.json` も同じバージョンに更新**（`AssemblyVersion`・`DownloadLinkInstall` / `DownloadLinkUpdate`）。
+
+4. GitHub Actions **Release** workflow builds `AutoFrontLine.zip` and publishes it to [Releases](https://github.com/exatrines/AutoFrontLine/releases).
 
    `v*` タグの push で自動実行。Actions タブから手動実行する場合は tag に `v1.0.0.0` を指定。
 
-`pluginmaster.json` の `AssemblyVersion` とタグ（例: `v1.0.0.0`）は一致している必要があります。
+`AutoFrontLine/AutoFrontLine.json` の `AssemblyVersion` とタグ（例: `v1.0.0.0`）は一致している必要があります。
 
 ## License
 

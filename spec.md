@@ -4,7 +4,8 @@
 
 - **Dalamud API Level:** 15
 - **依存:** ECommons（サブモジュール）
-- **配布:** `pluginmaster.json` + GitHub Releases（`v1.0.0.0` 形式のタグで CI が zip を公開）
+- **配布:** 外部リポジトリの `pluginmaster.json` + 本リポジトリ GitHub Releases（`v*` タグで CI が zip を公開）
+- **マニフェスト:** `AutoFrontLine/AutoFrontLine.json`（バージョン・DL URL の正本。zip に同梱）
 
 ## 必須外部プラグイン
 

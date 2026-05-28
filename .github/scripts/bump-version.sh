@@ -2,6 +2,8 @@
 # Usage: bash .github/scripts/bump-version.sh 1.0.0.0
 set -euo pipefail
 
+MANIFEST="AutoFrontLine/AutoFrontLine.json"
+
 if [[ $# -ne 1 ]]; then
   echo "Usage: $0 <AssemblyVersion>" >&2
   echo "Example: $0 1.0.0.0" >&2
@@ -16,21 +18,15 @@ if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-# csproj uses up to three segments (1.0.0 -> assembly 1.0.0.0)
 CSPROJ_VERSION="${VERSION%.*}"
-
 DOWNLOAD_URL="https://github.com/exatrines/AutoFrontLine/releases/download/${TAG}/AutoFrontLine.zip"
 
 jq --arg av "$VERSION" --arg url "$DOWNLOAD_URL" \
-  '.[0].AssemblyVersion = $av
-   | .[0].DownloadLinkInstall = $url
-   | .[0].DownloadLinkUpdate = $url' \
-  pluginmaster.json > pluginmaster.json.tmp
-mv pluginmaster.json.tmp pluginmaster.json
-
-jq --arg av "$VERSION" '.AssemblyVersion = $av' \
-  AutoFrontLine/AutoFrontLine.json > AutoFrontLine/AutoFrontLine.json.tmp
-mv AutoFrontLine/AutoFrontLine.json.tmp AutoFrontLine/AutoFrontLine.json
+  '.AssemblyVersion = $av
+   | .DownloadLinkInstall = $url
+   | .DownloadLinkUpdate = $url' \
+  "$MANIFEST" > "${MANIFEST}.tmp"
+mv "${MANIFEST}.tmp" "$MANIFEST"
 
 py - <<PY
 import pathlib
@@ -45,12 +41,13 @@ path.write_text(text, encoding="utf-8")
 PY
 
 echo "Updated to $VERSION (tag $TAG)"
-echo "  pluginmaster.json"
-echo "  AutoFrontLine/AutoFrontLine.json"
+echo "  $MANIFEST"
 echo "  AutoFrontLine/AutoFrontLine.csproj (<Version>${CSPROJ_VERSION}</Version>)"
 echo ""
+echo "Update pluginmaster.json in your external repo separately."
+echo ""
 echo "Next:"
-echo "  git add pluginmaster.json AutoFrontLine/AutoFrontLine.json AutoFrontLine/AutoFrontLine.csproj"
+echo "  git add $MANIFEST AutoFrontLine/AutoFrontLine.csproj CHANGELOG.md"
 echo "  git commit -m \"Release ${VERSION}\""
 echo "  git tag ${TAG}"
 echo "  git push origin main --follow-tags"

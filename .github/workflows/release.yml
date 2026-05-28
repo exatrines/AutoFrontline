@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v1.0.0.0). Must match pluginmaster AssemblyVersion."
+        description: "Release tag (e.g. v1.0.0.0). Must match AutoFrontLine.json AssemblyVersion."
         required: true
         type: string
 
@@ -39,11 +39,11 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Release version: $VERSION (tag $TAG)"
 
-      - name: Verify pluginmaster version
+      - name: Verify manifest version
         run: |
-          EXPECTED=$(jq -r '.[0].AssemblyVersion' pluginmaster.json)
+          EXPECTED=$(jq -r '.AssemblyVersion' AutoFrontLine/AutoFrontLine.json)
           if [[ "$EXPECTED" != "$VERSION" ]]; then
-            echo "pluginmaster.json AssemblyVersion ($EXPECTED) does not match tag ($VERSION)." >&2
+            echo "AutoFrontLine.json AssemblyVersion ($EXPECTED) does not match tag ($VERSION)." >&2
             echo "Run: bash .github/scripts/bump-version.sh $VERSION" >&2
             exit 1
           fi
