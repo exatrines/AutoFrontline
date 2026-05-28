@@ -38,7 +38,7 @@ dotnet build AutoFrontLine.sln -c Release
    bash .github/scripts/bump-version.sh 1.0.0.0
    ```
 
-2. Commit, tag, and push:
+2. Commit, tag, and push（`main` だけでは Release は走りません。タグ必須）:
 
    ```bash
    git add pluginmaster.json AutoFrontLine/AutoFrontLine.json AutoFrontLine/AutoFrontLine.csproj CHANGELOG.md
@@ -48,6 +48,8 @@ dotnet build AutoFrontLine.sln -c Release
    ```
 
 3. GitHub Actions **Release** workflow builds `AutoFrontLine.zip` and publishes it to [Releases](https://github.com/exatrines/AutoFrontLine/releases).
+
+   `v*` タグの push で自動実行。Actions タブから手動実行する場合は tag に `v1.0.0.0` を指定。
 
 `pluginmaster.json` の `AssemblyVersion` とタグ（例: `v1.0.0.0`）は一致している必要があります。
 
