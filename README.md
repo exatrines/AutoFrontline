@@ -5,7 +5,17 @@ FF14 Dalamud plugin that automates Frontline movement and combat.
 ## Required plugins (not bundled)
 
 - [vnavmesh](https://github.com/awgil/ffxiv_navmesh) — `/vnav moveto <X> <Y> <Z>`
-- [Rotation Solver Reborn](https://github.com/ArchiDog1998/RotationSolverReborn) — `/rotation auto`
+- [Rotation Solver Reborn](https://github.com/FFXIV-CombatReborn/RotationSolverReborn) — `/rotation Off` / `/rotation Auto`
+
+## Install (custom repo)
+
+Add this URL in Dalamud → Settings → Experimental → Custom Plugin Repositories:
+
+```
+https://raw.githubusercontent.com/exatrines/AutoFrontLine/main/pluginmaster.json
+```
+
+Then install **Auto FrontLine** from Available Plugins.
 
 ## Build
 
@@ -17,5 +27,30 @@ dotnet build AutoFrontLine.sln -c Release
 ## In-game
 
 - `/autofrontline` or `/afl` — open settings
-- **Main**: Enable automation
-- **Debug**: Current field, tracked player, and move target
+- **General**: required plugins, Enable, intervals
+- **Debug**: field, tracked player, movement state
+
+## Release (maintainers)
+
+1. Bump version (four-part `AssemblyVersion`, tag `v` + version):
+
+   ```bash
+   bash .github/scripts/bump-version.sh 1.0.0.0
+   ```
+
+2. Commit, tag, and push:
+
+   ```bash
+   git add pluginmaster.json AutoFrontLine/AutoFrontLine.json AutoFrontLine/AutoFrontLine.csproj CHANGELOG.md
+   git commit -m "Release 1.0.0.0"
+   git tag v1.0.0.0
+   git push origin main --follow-tags
+   ```
+
+3. GitHub Actions **Release** workflow builds `AutoFrontLine.zip` and publishes it to [Releases](https://github.com/exatrines/AutoFrontLine/releases).
+
+`pluginmaster.json` の `AssemblyVersion` とタグ（例: `v1.0.0.0`）は一致している必要があります。
+
+## License
+
+AGPL-3.0-or-later

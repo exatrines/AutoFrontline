@@ -2,7 +2,13 @@
 set -euo pipefail
 
 MANIFEST_PATH="${1:-AutoFrontLine/bin/Release/AutoFrontLine.json}"
-ASSEMBLY_VERSION=$(jq -r '.[0].AssemblyVersion' pluginmaster.json)
+
+if [[ -n "${RELEASE_VERSION:-}" ]]; then
+  ASSEMBLY_VERSION="$RELEASE_VERSION"
+else
+  ASSEMBLY_VERSION=$(jq -r '.[0].AssemblyVersion' pluginmaster.json)
+fi
+
 DALAMUD_API=$(jq -r '.[0].DalamudApiLevel' pluginmaster.json)
 
 if [[ -z "$ASSEMBLY_VERSION" || "$ASSEMBLY_VERSION" == "null" ]]; then

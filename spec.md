@@ -4,6 +4,7 @@
 
 - **Dalamud API Level:** 15
 - **依存:** ECommons（サブモジュール）
+- **配布:** `pluginmaster.json` + GitHub Releases（`v1.0.0.0` 形式のタグで CI が zip を公開）
 
 ## 必須外部プラグイン
 
