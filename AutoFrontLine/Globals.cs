@@ -1,0 +1,16 @@
+global using System;
+global using System.Globalization;
+global using AutoFrontLine.Dependencies;
+global using Dalamud.Plugin;
+global using Dalamud.Bindings.ImGui;
+global using ECommons.DalamudServices;
+global using Dalamud.Interface;
+global using Dalamud.Interface.Colors;
+global using ECommons.Logging;
+global using ECommons;
+global using ECommons.ImGuiMethods;
+global using ECommons.SimpleGui;
+global using ECommons.Configuration;
+global using ECommons.Throttlers;
+global using ECommons.Automation;
+global using static AutoFrontLine.Plugin;
