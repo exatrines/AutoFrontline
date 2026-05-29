@@ -18,6 +18,7 @@ public static unsafe class FrontlineLeaveAutomation
     private static long leaveRequestedTick;
 
     public static bool PendingLeaveConfirm => pendingLeaveConfirm;
+    public static bool IsRecordScreenVisible => IsRecordAddonVisible();
 
     public static void Update()
     {

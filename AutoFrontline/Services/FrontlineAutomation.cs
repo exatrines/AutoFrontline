@@ -16,6 +16,10 @@ public static class FrontlineAutomation
         FrontlineDutyConfirmAutomation.Update();
         FrontlineLeaveAutomation.Update();
 
+        // 試合終了結果画面（FrontlineRecord）では、退出処理のみ行い他の操作は止める。
+        if (FrontlineLeaveAutomation.IsRecordScreenVisible)
+            return;
+
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))
             return;
 
