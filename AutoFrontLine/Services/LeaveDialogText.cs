@@ -1,6 +1,6 @@
 namespace AutoFrontLine.Services;
 
-/// <summary>フロントライン退出確認ダイアログの文言判定。</summary>
+/// <summary>フロントライン退出確認 SelectYesno の文言判定。</summary>
 internal static class LeaveDialogText
 {
     public static bool IsLeaveConfirmation(string text)

@@ -13,6 +13,7 @@ public static class FrontlineAutomation
         if (Player.IsDead)
             return;
 
+        FrontlineDutyConfirmAutomation.Update();
         FrontlineLeaveAutomation.Update();
 
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))

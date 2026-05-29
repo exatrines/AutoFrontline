@@ -1,4 +1,3 @@
-using ECommons.Automation.UIInput;
 using ECommons.UIHelpers;
 using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -6,14 +5,17 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontLine.Services;
 
-/// <summary>試合終了画面からの自動退出。</summary>
+/// <summary>
+/// 試合終了画面: FrontlineRecord で Callback.Fire(-1) し、続く SelectYesno を Yes。
+/// YesAlready の FrontlineRecord と同じコールバック。YesNo は本プラグインで処理する。
+/// </summary>
 public static unsafe class FrontlineLeaveAutomation
 {
     private static readonly string[] RecordAddonNames = ["FrontlineRecord", "FrontLineRecord"];
 
-    private static bool leaveClickedForRecord;
+    private static bool leaveRequestedForRecord;
     private static bool pendingLeaveConfirm;
-    private static long leaveClickedTick;
+    private static long leaveRequestedTick;
 
     public static bool PendingLeaveConfirm => pendingLeaveConfirm;
 
@@ -30,7 +32,7 @@ public static unsafe class FrontlineLeaveAutomation
         if (!EzThrottler.Throttle(FrontlineConstants.ThrottleLeaveRecord, FrontlineConstants.LeaveRecordThrottleMs))
             return;
 
-        TryClickRecordLeaveButton();
+        TryRequestLeave();
     }
 
     private static void ExpirePendingConfirmIfTimedOut()
@@ -38,7 +40,7 @@ public static unsafe class FrontlineLeaveAutomation
         if (!pendingLeaveConfirm)
             return;
 
-        if (Environment.TickCount64 - leaveClickedTick > FrontlineConstants.LeaveConfirmTimeoutMs)
+        if (Environment.TickCount64 - leaveRequestedTick > FrontlineConstants.LeaveConfirmTimeoutMs)
             pendingLeaveConfirm = false;
     }
 
@@ -55,14 +57,17 @@ public static unsafe class FrontlineLeaveAutomation
             if (!yesno.IsVisible)
                 continue;
 
-            if (!pendingLeaveConfirm && !LeaveDialogText.IsLeaveConfirmation(ReadYesnoText(yesno)))
+            if (!pendingLeaveConfirm && !LeaveDialogText.IsLeaveConfirmation(yesno.TextLegacy))
                 continue;
 
             if (!TryClickYes(yesno))
                 continue;
 
             if (!yesno.IsVisible)
+            {
                 pendingLeaveConfirm = false;
+                leaveRequestedForRecord = false;
+            }
 
             return true;
         }
@@ -70,29 +75,27 @@ public static unsafe class FrontlineLeaveAutomation
         return false;
     }
 
-    private static void TryClickRecordLeaveButton()
+    private static void TryRequestLeave()
     {
         if (!TryGetRecordAddon(out var addon))
         {
-            leaveClickedForRecord = false;
+            leaveRequestedForRecord = false;
             return;
         }
 
-        if (!addon->IsVisible)
+        if (!addon->IsVisible || !GenericHelpers.IsAddonReady(addon))
         {
-            leaveClickedForRecord = false;
+            leaveRequestedForRecord = false;
             return;
         }
 
-        if (leaveClickedForRecord)
+        if (leaveRequestedForRecord)
             return;
 
-        if (!ClickAddonButton(addon, FrontlineConstants.LeaveRecordButtonNodeId))
-            return;
-
-        leaveClickedForRecord = true;
+        ECommons.Automation.Callback.Fire(addon, true, -1);
+        leaveRequestedForRecord = true;
         pendingLeaveConfirm = true;
-        leaveClickedTick = Environment.TickCount64;
+        leaveRequestedTick = Environment.TickCount64;
     }
 
     private static bool IsRecordAddonVisible() =>
@@ -122,16 +125,16 @@ public static unsafe class FrontlineLeaveAutomation
 
         if (yesButton->IsEnabled && yesButton->AtkResNode->IsVisible())
         {
-            yesButton->ClickAddonButton(yesno.Base);
-            if (!yesno.Base->IsVisible)
+            yesno.Yes();
+            if (!yesno.IsVisible)
                 return true;
         }
 
         if (FireYesCallback(yesno.Base))
             return !yesno.Base->IsVisible;
 
-        yesButton->ClickAddonButton(yesno.Base);
-        return !yesno.Base->IsVisible;
+        yesno.Yes();
+        return !yesno.IsVisible;
     }
 
     private static bool FireYesCallback(AtkUnitBase* addon)
@@ -147,17 +150,6 @@ public static unsafe class FrontlineLeaveAutomation
         }
     }
 
-    private static bool ClickAddonButton(AtkUnitBase* addon, uint buttonId)
-    {
-        var button = addon->GetComponentButtonById(buttonId);
-        if (button == null || !button->AtkResNode->IsVisible())
-            return false;
-
-        EnableButtonIfDisabled(button);
-        button->ClickAddonButton(addon);
-        return true;
-    }
-
     private static void EnableButtonIfDisabled(AtkComponentButton* button)
     {
         if (button == null || button->IsEnabled)
@@ -165,18 +157,5 @@ public static unsafe class FrontlineLeaveAutomation
 
         var flagsPtr = (ushort*)&button->AtkComponentBase.OwnerNode->AtkResNode.NodeFlags;
         *flagsPtr ^= 1 << 5;
-    }
-
-    private static string ReadYesnoText(AddonMaster.SelectYesno yesno)
-    {
-        try
-        {
-            var addon = (AddonSelectYesno*)yesno.Base;
-            return addon->PromptText != null ? yesno.Text : yesno.TextLegacy;
-        }
-        catch
-        {
-            return string.Empty;
-        }
     }
 }

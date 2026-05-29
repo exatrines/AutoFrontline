@@ -37,7 +37,9 @@
 | `FollowIntervalSeconds` | 1 | 移動コマンド間隔（秒、UI は整数 1〜60） |
 | `PlayerReselectIntervalSeconds` | 3 | 追跡対象の再選択間隔（秒、UI は整数 1〜120） |
 
-- コマンド: `/autofrontline`, `/afl`
+- コマンド: `/autofrontline`, `/autoflontline`（表記ゆれ用）, `/afl`
+  - 引数なし: 設定を開く
+  - `on` / `off` / `toggle`: `Enabled` を変更（必須プラグイン未充足時は `on` を拒否しチャットに通知）
 - タブ: **General**（必須プラグイン・Enable・間隔）、**Debug**（状態表示、タブ文字色グレー）
 - 設定ウィンドウ: 初回 600×600、最小 600×400。本文とフッター（バージョン・リンクボタン）を分離
 - フッターリンク: GitHub（グレー背景・白文字）、OFUSE / Ko-fi（ピンク・白文字）
@@ -97,16 +99,17 @@ IFramework.Update
 - 5m 以上かつ未マウントのとき、抜刀中または非戦闘なら `ShouldDeferMovement` が true（moveto を待つ）
 - **納刀済みの実戦闘中**（`InCombat` かつ非抜刀）はマウント試行・移動待ちを行わない
 
-## 試合終了の自動退出
+## ダイアログ自動操作
 
-`IsAutomationActive` 時。
+`IsAutomationActive` 時のみ。
 
-1. `FrontlineRecord` / `FrontLineRecord` 表示 → ボタン Node **#65** を1回クリック
-2. `SelectYesno` → Yes（`YesButton` が null の場合は `Callback.Fire(0)`）
-   - 退出ボタン押下後は pending 中は文言不一致でも Yes
-   - それ以外は `LeaveDialogText` でフロントライン退出系の文言を判定
+| アドオン | 動作 |
+|---------|------|
+| `ContentsFinderConfirm` | `Commence()`（参加確定） |
+| `FrontlineRecord` / `FrontLineRecord` | `Callback.Fire(addon, true, -1)` で退出要求（YesAlready と同じ） |
+| `SelectYesno` | 退出確認文言または pending 中は `Yes` |
 
-スロットル: 退出 500ms、Yesno 300ms。退出押下から 60 秒で pending 解除。
+スロットル: Record 500ms、Yesno 300ms。退出要求から 60 秒で pending 解除。
 
 ## プロジェクト構成
 
@@ -123,8 +126,9 @@ IFramework.Update
 | `Services/TrackedPlayerSync.cs` | マウント |
 | `Services/MovementCommands.cs` | vnav / rotation コマンド |
 | `Services/FrontlineAutomation.cs` | オーケストレーション |
-| `Services/FrontlineLeaveAutomation.cs` | 結果画面からの退出 |
+| `Services/FrontlineLeaveAutomation.cs` | 結果画面退出 + SelectYesno 確認 |
 | `Services/LeaveDialogText.cs` | 退出 Yesno 文言判定 |
+| `Services/FrontlineDutyConfirmAutomation.cs` | コンテンツファインダー参加確定 |
 | `UI/ConfigWindow.cs` | タブ付き設定ウィンドウ |
 | `UI/GeneralTab.cs` | General タブ |
 | `UI/DebugTab.cs` | Debug タブ |
