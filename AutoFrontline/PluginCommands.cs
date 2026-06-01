@@ -4,7 +4,7 @@ namespace AutoFrontline;
 
 internal static class PluginCommands
 {
-    private const string Usage = "/autofrontline on|off|toggle - Enable or disable (no args: open settings)";
+    private const string Usage = "/autofrontline on|off|toggle - Enable or disable (no args: toggle settings)";
 
     public static void Handle(string command, string args)
     {
@@ -26,7 +26,7 @@ internal static class PluginCommands
                 return;
             case null:
             case "":
-                EzConfigGui.Open();
+                ToggleConfigWindow();
                 return;
             default:
                 DuoLog.Information(Usage);
@@ -35,6 +35,17 @@ internal static class PluginCommands
     }
 
     public static void ToggleEnabled() => SetEnabled(!C.Enabled);
+
+    private static void ToggleConfigWindow()
+    {
+        if (EzConfigGui.Window == null)
+        {
+            EzConfigGui.Open();
+            return;
+        }
+
+        EzConfigGui.Window.IsOpen = !EzConfigGui.Window.IsOpen;
+    }
 
     internal static void SetEnabled(bool enabled)
     {

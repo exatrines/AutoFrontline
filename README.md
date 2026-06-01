@@ -1,7 +1,7 @@
 # Auto Frontline
 
 <div align="center">
-<img src="./AutoFrontline/images/icon.png" width="300px">
+<img src="https://raw.githubusercontent.com/exatrines/DalamudPlugins/refs/heads/main/assets/images/AutoFrontlineIcon.png?raw=true" width="300px">
 </div>
 
 ## About
@@ -21,7 +21,7 @@ https://raw.githubusercontent.com/exatrines/DalamudPlugins/refs/heads/main/plugi
 
 ## In-game
 
-- `/autofrontline` — open settings
+- `/autofrontline` — toggle settings window
 - `/autofrontline on|off` — enable or disable plugin
 - `/autofrontline toggle` — toggle plugin
 - **General**: required plugins, recommended job
