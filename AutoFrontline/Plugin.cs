@@ -19,7 +19,7 @@ public sealed class Plugin : IDalamudPlugin
         C = EzConfig.Init<Configuration>();
         EzConfigGui.Init(UI.ConfigWindow.Draw, windowType: EzConfigGui.WindowType.Both);
         ConfigureConfigWindow();
-        const string help = "on|off|toggle — Enable or disable. No args: open settings.";
+        const string help = "on|off|toggle — Enable or disable. No args: toggle settings.";
         EzCmd.Add("/autofrontline", PluginCommands.Handle, help);
         PluginDtr.Init();
         FrontlineLeaveAutomation.Init();
