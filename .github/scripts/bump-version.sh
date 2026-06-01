@@ -18,7 +18,7 @@ if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-CSPROJ_VERSION="${VERSION%.*}"
+CSPROJ_VERSION="$VERSION"
 DOWNLOAD_URL="https://github.com/exatrines/AutoFrontline/releases/download/${TAG}/AutoFrontline.zip"
 
 jq --arg av "$VERSION" --arg url "$DOWNLOAD_URL" \
