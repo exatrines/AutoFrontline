@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0.3 - 2026-06-01
+
+- `AutoFrontline.csproj` の `<Version>` を `AssemblyVersion` と同期（1.1.0.3）
+
 ## v1.1.0.2 - 2026-06-01
 
 - アイコンパスを変更
