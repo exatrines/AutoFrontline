@@ -19,7 +19,7 @@ public static class FrontlineAutomation
         FrontlineDutyConfirmAutomation.Update();
         FrontlineLeaveAutomation.Update();
 
-        if (FrontlineLeaveAutomation.IsRecordScreenVisible)
+        if (FrontlineLeaveAutomation.IsBlockingAutomation)
             return;
 
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))

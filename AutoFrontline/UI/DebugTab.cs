@@ -6,10 +6,11 @@ using ECommons;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontline.UI;
 
-public static class DebugTab
+public static unsafe class DebugTab
 {
     public static void Draw()
     {
@@ -134,7 +135,20 @@ public static class DebugTab
         AflImGui.SectionHeader("Status");
         DrawStatusBullet("Movement", TrackedPlayerSync.ShouldDeferMovement, "Waiting to mount before move");
         DrawStatusBullet("Vnav blocked", !PlayerMovementGate.CanIssueVnavMoveTo, "Casting or mounting");
-        DrawStatusBullet("Leave", FrontlineLeaveAutomation.PendingLeaveConfirm, "Waiting for leave confirmation");
+        DrawStatusBullet(
+            "Auto leave",
+            C.AutoLeaveEnabled && FrontlineLeaveAutomation.IsRecordScreenVisible,
+            "Leaving from record screen");
+        DrawStatusBullet(
+            "Record screen",
+            FrontlineLeaveAutomation.IsRecordScreenVisible,
+            "Frontline record screen");
+        DrawStatusBullet(
+            "Auto enter",
+            C.AutoEnterEnabled
+            && GenericHelpers.TryGetAddonByName<AtkUnitBase>("ContentsFinderConfirm", out var enterAddon)
+            && enterAddon->IsVisible,
+            "Contents Finder confirm open");
     }
 
     private static void DrawStatusBullet(string label, bool active, string message)

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0.4 - 2026-06-02
+
+- 設定に **Auto enter** / **Auto leave** を追加（デイリー参加確認・試合終了画面からの退出を個別に ON/OFF）
+- 自動退出を `EventFramework.LeaveCurrentContent` に変更（SelectYesno の退出確認ダイアログ操作を廃止）
+- Debug のステータス表示を Auto enter / Auto leave / 結果画面に合わせて更新
+
 ## v1.1.0.3 - 2026-06-01
 
 - `AutoFrontline.csproj` の `<Version>` を `AssemblyVersion` と同期（1.1.0.3）

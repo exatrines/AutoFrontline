@@ -25,4 +25,15 @@ internal static class BilingualTextMatcher
 
         return false;
     }
+
+    public static bool EqualsNormalized(string left, string right)
+    {
+        if (IsNullOrWhiteSpace(left) || IsNullOrWhiteSpace(right))
+            return false;
+
+        return string.Equals(Normalize(left), Normalize(right), StringComparison.Ordinal);
+    }
+
+    public static string Normalize(string text) =>
+        string.Join(' ', text.Replace('\n', ' ').Split(' ', StringSplitOptions.RemoveEmptyEntries)).Trim();
 }
