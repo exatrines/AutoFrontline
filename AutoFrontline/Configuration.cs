@@ -21,6 +21,12 @@ public sealed class Configuration
     /// <summary>この半径内に敵プレイヤーがいればマウントを降ろす（m）。</summary>
     public int DismountEnemyDistanceMeters = 20;
 
+    /// <summary>ContentsFinderConfirm（デイリーフロントライン）表示時に自動で参加する。</summary>
+    public bool AutoEnterEnabled = true;
+
+    /// <summary>FrontlineRecord 表示時に自動でコンテンツ退出する。</summary>
+    public bool AutoLeaveEnabled = true;
+
     // Legacy config keys
     public float UpdateIntervalSeconds
     {

@@ -14,8 +14,6 @@ internal static class FrontlineConstants
     public const int DismountThrottleMs = 1500;
 
     public const uint MountRouletteGeneralActionId = 9;
-    public const int LeaveYesnoThrottleMs = 300;
-    public const int LeaveConfirmTimeoutMs = 60_000;
     public const int ContentsFinderConfirmThrottleMs = 500;
     public const int RotationManualIntervalMs = 2000;
 
@@ -23,7 +21,6 @@ internal static class FrontlineConstants
     public const int ModeRefreshMinMs = 500;
 
     public const string ThrottleMove = "AflMove";
-    public const string ThrottleLeaveYesno = "AflLeaveYesno";
     public const string ThrottleContentsFinderConfirm = "AflContentsFinderConfirm";
     public const string ThrottleRotationManual = "AflRotationManual";
     public const string ThrottleEnemyTarget = "AflEnemyTarget";

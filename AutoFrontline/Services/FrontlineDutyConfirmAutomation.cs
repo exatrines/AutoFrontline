@@ -29,6 +29,9 @@ public static unsafe class FrontlineDutyConfirmAutomation
         if (commencedForCurrentAddon)
             return;
 
+        if (!C.AutoEnterEnabled)
+            return;
+
         if (!DailyFrontlineDutyText.IsDailyFrontlineMatching(addon))
             return;
 

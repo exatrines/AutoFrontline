@@ -22,7 +22,6 @@ public sealed class Plugin : IDalamudPlugin
         const string help = "on|off|toggle — Enable or disable. No args: toggle settings.";
         EzCmd.Add("/autofrontline", PluginCommands.Handle, help);
         PluginDtr.Init();
-        FrontlineLeaveAutomation.Init();
 
         Svc.Framework.Update += OnFrameworkUpdate;
     }
@@ -44,7 +43,6 @@ public sealed class Plugin : IDalamudPlugin
     public void Dispose()
     {
         Svc.Framework.Update -= OnFrameworkUpdate;
-        FrontlineLeaveAutomation.Dispose();
         ECommonsMain.Dispose();
         C = null!;
     }

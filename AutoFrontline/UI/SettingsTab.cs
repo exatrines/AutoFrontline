@@ -10,6 +10,11 @@ public static class SettingsTab
     private static void DrawSettings()
     {
         ImGui.Checkbox("Enable", ref C.Enabled);
+        AflImGui.SectionHeader("Duty");
+        ImGui.Checkbox("Auto enter", ref C.AutoEnterEnabled);
+        ImGui.TextDisabled("Enter Frontline when Contents Finder matched Daily Frontline.");
+        ImGui.Checkbox("Auto leave", ref C.AutoLeaveEnabled);
+        ImGui.TextDisabled("Leave Frontline when Frontline result screen is opened.");
         AflImGui.SectionHeader("General");
         MountPicker.Draw();
         DrawDistanceSlider("Mount distance for target (m)", ref C.MountDistanceMeters);
