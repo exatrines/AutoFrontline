@@ -20,7 +20,7 @@ public static unsafe class FrontlineLeaveAutomation
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))
             return;
 
-        if (!C.AutoLeaveEnabled || !IsRecordScreenReady())
+        if (!RequiredPlugins.ShouldAutoLeave || !IsRecordScreenReady())
             return;
 
         if (!EventFramework.CanLeaveCurrentContent())

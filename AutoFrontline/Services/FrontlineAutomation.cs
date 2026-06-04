@@ -11,6 +11,7 @@ public static class FrontlineAutomation
     {
         AllianceMemberCache.BeginFrame();
         RequiredPlugins.SyncEnabledState();
+        FrontlineAutoRunOrchestrator.Update();
         RotationModeAutomation.Update();
 
         if (Player.IsDead)

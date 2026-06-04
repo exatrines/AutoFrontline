@@ -1,7 +1,11 @@
+using AutoFrontline.Services;
+
 namespace AutoFrontline.UI;
 
 public static class SettingsTab
 {
+    private static readonly string[] ModeLabels = ["Disable", "Manual", "Auto"];
+
     public static void Draw()
     {
         AflImGui.DrawSettingsWhenReady(DrawSettings);
@@ -9,7 +13,8 @@ public static class SettingsTab
 
     private static void DrawSettings()
     {
-        ImGui.Checkbox("Enable", ref C.Enabled);
+        DrawModeRow();
+
         AflImGui.SectionHeader("Duty");
         ImGui.Checkbox("Auto enter", ref C.AutoEnterEnabled);
         ImGui.TextDisabled("Enter Frontline when Contents Finder matched Daily Frontline.");
@@ -25,6 +30,77 @@ public static class SettingsTab
             "Hostile mode position",
             ref C.HostileModePositionRatio,
             "0 = front ally, 1 = rearmost ally");
+    }
+
+    private static void DrawModeRow()
+    {
+        var modeIndex = (int)C.Mode;
+        if (modeIndex < 0 || modeIndex >= ModeLabels.Length)
+            modeIndex = 0;
+
+        if (AutoRunSession.Active)
+            ImGui.BeginDisabled();
+
+        ImGui.SetNextItemWidth(120f);
+        if (ImGui.Combo("Mode", ref modeIndex, ModeLabels, ModeLabels.Length))
+        {
+            var newMode = (PluginMode)modeIndex;
+            if (C.Mode != newMode)
+            {
+                if (newMode != PluginMode.Auto)
+                {
+                    AutoRunSession.Stop();
+                    ContentsFinderQueueAutomation.ResetState();
+                }
+
+                C.Mode = newMode;
+                EzConfig.Save();
+            }
+        }
+
+        if (AutoRunSession.Active)
+            ImGui.EndDisabled();
+
+        if (C.Mode == PluginMode.Auto)
+        {
+            ImGui.SameLine();
+            ImGui.TextDisabled($"{AutoRunSession.CurrentCount} / {C.AutoMaxCount}");
+
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(60f);
+            var maxCount = C.AutoMaxCount;
+            if (ImGui.InputInt("##AutoMaxCount", ref maxCount, 1, 5))
+            {
+                C.AutoMaxCount = Math.Clamp(maxCount, FrontlineConstants.AutoMaxCountMin, FrontlineConstants.AutoMaxCountMax);
+            }
+
+            ImGui.SameLine();
+            var canStart = RequiredPlugins.AreAllLoaded
+                && !AutoRunSession.Active
+                && C.AutoMaxCount >= FrontlineConstants.AutoMaxCountMin;
+
+            if (!canStart)
+                ImGui.BeginDisabled();
+
+            if (ImGui.Button("Start"))
+            {
+                AutoRunSession.Start();
+                ContentsFinderQueueAutomation.ResetState();
+            }
+
+            if (!canStart)
+                ImGui.EndDisabled();
+
+            ImGui.SameLine();
+            if (!AutoRunSession.Active)
+                ImGui.BeginDisabled();
+
+            if (ImGui.Button("Stop"))
+                AutoRunSession.Stop();
+
+            if (!AutoRunSession.Active)
+                ImGui.EndDisabled();
+        }
     }
 
     private static void DrawDistanceSlider(string label, ref int meters)

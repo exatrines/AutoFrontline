@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.2.0.0 - 2026-06-02
+
+- **Enable** を廃止し、**Mode** コンボ（Disable / Manual / Auto）を追加
+- **Auto** モード: Start/Stop、MaxCount、入室カウント表示。Start 中は Mode 固定
+- Auto ループ: コンテンツルーレットのデイリーチャレンジ・フロントラインへ参加申請 → 自動参加 → 試合終了後自動退出を MaxCount 回繰り返し（入室時にカウント +1）
+- コンテンツファインダー: リスト行 Text #6 と callback `3`（Leaf インデックス）でルーレット選択
+- マウント降下: 近傍の敵に加え、ModelCharaId `0x1E0`（アイスドトームリス）が **Dismount distance** 内にあるときも降下
+- 旧設定 `Enabled` は ConfigVersion 2 へ自動移行
+
 ## v1.1.0.4 - 2026-06-02
 
 - 設定に **Auto enter** / **Auto leave** を追加（デイリー参加確認・試合終了画面からの退出を個別に ON/OFF）

@@ -1,10 +1,11 @@
-﻿using ECommons.Logging;
+﻿using AutoFrontline.Services;
+using ECommons.Logging;
 
 namespace AutoFrontline;
 
 internal static class PluginCommands
 {
-    private const string Usage = "/autofrontline on|off|toggle - Enable or disable (no args: toggle settings)";
+    private const string Usage = "/autofrontline on|off|toggle - Manual/Disable (no args: toggle settings)";
 
     public static void Handle(string command, string args)
     {
@@ -15,14 +16,14 @@ internal static class PluginCommands
         {
             case "on":
             case "enable":
-                SetEnabled(true);
+                SetMode(PluginMode.Manual);
                 return;
             case "off":
             case "disable":
-                SetEnabled(false);
+                SetMode(PluginMode.Disable);
                 return;
             case "toggle":
-                ToggleEnabled();
+                ToggleMode();
                 return;
             case null:
             case "":
@@ -34,7 +35,26 @@ internal static class PluginCommands
         }
     }
 
-    public static void ToggleEnabled() => SetEnabled(!C.Enabled);
+    public static void ToggleEnabled()
+    {
+        if (C.Mode == PluginMode.Manual)
+            SetMode(PluginMode.Disable);
+        else
+            SetMode(PluginMode.Manual);
+    }
+
+    private static void ToggleMode()
+    {
+        if (C.Mode == PluginMode.Auto && AutoRunSession.Active)
+        {
+            AutoRunSession.Stop();
+            ContentsFinderQueueAutomation.ResetState();
+            DuoLog.Information("Auto Frontline auto run stopped.");
+            return;
+        }
+
+        ToggleEnabled();
+    }
 
     private static void ToggleConfigWindow()
     {
@@ -47,22 +67,30 @@ internal static class PluginCommands
         EzConfigGui.Window.IsOpen = !EzConfigGui.Window.IsOpen;
     }
 
-    internal static void SetEnabled(bool enabled)
+    internal static void SetMode(PluginMode mode)
     {
-        if (enabled && !RequiredPlugins.AreAllLoaded)
+        if (mode != PluginMode.Disable && !RequiredPlugins.AreAllLoaded)
         {
             DuoLog.Information(RequiredPlugins.GetMissingPluginsMessage());
             return;
         }
 
-        if (C.Enabled == enabled)
+        if (mode != PluginMode.Auto)
         {
-            DuoLog.Information($"Auto Frontline is already {(enabled ? "enabled" : "disabled")}.");
+            AutoRunSession.Stop();
+            ContentsFinderQueueAutomation.ResetState();
+        }
+
+        if (C.Mode == mode && !AutoRunSession.Active)
+        {
+            DuoLog.Information($"Auto Frontline is already in {mode} mode.");
             return;
         }
 
-        C.Enabled = enabled;
+        C.Mode = mode;
         EzConfig.Save();
-        DuoLog.Information($"Auto Frontline {(enabled ? "enabled" : "disabled")}.");
+        DuoLog.Information($"Auto Frontline mode: {mode}.");
     }
+
+    internal static void SetEnabled(bool enabled) => SetMode(enabled ? PluginMode.Manual : PluginMode.Disable);
 }

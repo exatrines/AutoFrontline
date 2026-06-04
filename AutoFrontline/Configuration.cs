@@ -2,7 +2,17 @@
 
 public sealed class Configuration
 {
+    private const int CurrentConfigVersion = 2;
+
+    public int ConfigVersion = CurrentConfigVersion;
+
+    /// <summary>v1 互換用（ConfigVersion &lt; 2 の移行時のみ参照）。</summary>
     public bool Enabled;
+
+    public PluginMode Mode = PluginMode.Manual;
+
+    public int AutoMaxCount = 1;
+
     /// <summary>0 = マウントルーレット。それ以外は <see cref="Mount"/> の RowId。</summary>
     public uint MountSelectionId;
 
@@ -26,6 +36,16 @@ public sealed class Configuration
 
     /// <summary>FrontlineRecord 表示時に自動でコンテンツ退出する。</summary>
     public bool AutoLeaveEnabled = true;
+
+    public void MigrateIfNeeded()
+    {
+        if (ConfigVersion >= CurrentConfigVersion)
+            return;
+
+        Mode = Enabled ? PluginMode.Manual : PluginMode.Disable;
+        ConfigVersion = CurrentConfigVersion;
+        EzConfig.Save();
+    }
 
     // Legacy config keys
     public float UpdateIntervalSeconds
