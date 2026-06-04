@@ -4,7 +4,7 @@ namespace AutoFrontline.Dependencies;
 
 internal readonly record struct RequiredPlugin(string DisplayName, string InternalName);
 
-/// <summary>vnavmesh / Rotation Solver Reborn の有効化チェックと Enable 連動。</summary>
+/// <summary>vnavmesh / Rotation Solver Reborn の有効化チェックと Mode 連動。</summary>
 internal static class RequiredPlugins
 {
     public static readonly RequiredPlugin VNavmesh = new("vnavmesh", "vnavmesh");
@@ -28,13 +28,24 @@ internal static class RequiredPlugins
         }
     }
 
-    public static bool IsAutomationActive => C.Enabled && AreAllLoaded;
+    public static bool IsAutomationActive =>
+        AreAllLoaded && (C.Mode == PluginMode.Manual
+            || (C.Mode == PluginMode.Auto && AutoRunSession.Active));
+
+    public static bool ShouldAutoEnter =>
+        C.Mode == PluginMode.Auto && AutoRunSession.Active || C.AutoEnterEnabled;
+
+    public static bool ShouldAutoLeave =>
+        C.Mode == PluginMode.Auto && AutoRunSession.Active || C.AutoLeaveEnabled;
 
     public static void SyncEnabledState()
     {
-        if (C.Enabled && !AreAllLoaded)
+        if (!AreAllLoaded && C.Mode != PluginMode.Disable)
         {
-            C.Enabled = false;
+            if (C.Mode == PluginMode.Auto)
+                AutoRunSession.Stop();
+
+            C.Mode = PluginMode.Disable;
             EzConfig.Save();
         }
     }

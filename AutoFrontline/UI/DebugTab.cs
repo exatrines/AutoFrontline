@@ -61,6 +61,8 @@ public static unsafe class DebugTab
         table.Row("Mounting", Player.Mounting ? "Yes" : "No");
         table.Row("Mount choice", MountCatalog.GetDisplayName(C.MountSelectionId));
         table.Row($"Nearby enemies ({C.DismountEnemyDistanceMeters}m)", $"{TrackedPlayerSync.LastNearbyEnemyCount}");
+        table.Row($"Icedotome Iris nearby ({C.DismountEnemyDistanceMeters}m)",
+            TrackedPlayerSync.LastIcedotomeIrisNearby ? "Yes" : "No");
         table.End();
     }
 
@@ -133,11 +135,19 @@ public static unsafe class DebugTab
     private static void DrawStatusSection()
     {
         AflImGui.SectionHeader("Status");
+        ImGui.TextDisabled($"Mode: {C.Mode}");
+        if (C.Mode == PluginMode.Auto)
+        {
+            ImGui.TextDisabled($"Auto run: {(AutoRunSession.Active ? "active" : "idle")} ({AutoRunSession.CurrentCount}/{C.AutoMaxCount})");
+            ImGui.TextDisabled($"Phase: {FrontlineAutoRunOrchestrator.LastPhase}");
+            ImGui.TextDisabled($"CF queue: {ContentsFinderQueueAutomation.LastStatus}");
+        }
+
         DrawStatusBullet("Movement", TrackedPlayerSync.ShouldDeferMovement, "Waiting to mount before move");
         DrawStatusBullet("Vnav blocked", !PlayerMovementGate.CanIssueVnavMoveTo, "Casting or mounting");
         DrawStatusBullet(
             "Auto leave",
-            C.AutoLeaveEnabled && FrontlineLeaveAutomation.IsRecordScreenVisible,
+            RequiredPlugins.ShouldAutoLeave && FrontlineLeaveAutomation.IsRecordScreenVisible,
             "Leaving from record screen");
         DrawStatusBullet(
             "Record screen",
@@ -145,7 +155,7 @@ public static unsafe class DebugTab
             "Frontline record screen");
         DrawStatusBullet(
             "Auto enter",
-            C.AutoEnterEnabled
+            RequiredPlugins.ShouldAutoEnter
             && GenericHelpers.TryGetAddonByName<AtkUnitBase>("ContentsFinderConfirm", out var enterAddon)
             && enterAddon->IsVisible,
             "Contents Finder confirm open");

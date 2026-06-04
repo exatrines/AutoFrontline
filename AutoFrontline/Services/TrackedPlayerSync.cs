@@ -7,13 +7,14 @@ using Lumina.Excel.Sheets;
 
 namespace AutoFrontline.Services;
 
-/// <summary>移動先が遠いときマウントを試行。近傍の敵プレイヤーがいるとき降下。</summary>
+/// <summary>移動先が遠いときマウントを試行。近傍の敵またはアイスドトームリスがいるとき降下。</summary>
 public static unsafe class TrackedPlayerSync
 {
     public static float LastDistanceToTracked { get; private set; }
     public static float LastDistanceToMoveDestination { get; private set; }
     public static bool LastSelfInCombat { get; private set; }
     public static int LastNearbyEnemyCount { get; private set; }
+    public static bool LastIcedotomeIrisNearby { get; private set; }
 
     public static bool ShouldDeferMovement =>
         ShouldTryMountForMoveDistance() && !Player.Mounted && !Player.Mounting;
@@ -43,8 +44,9 @@ public static unsafe class TrackedPlayerSync
         var allies = AllianceMemberCache.GetMembers();
         var hasNearbyEnemy = NearbyEnemyDetector.HasNearbyEnemy(allies, out var enemyCount);
         LastNearbyEnemyCount = enemyCount;
+        LastIcedotomeIrisNearby = IcedotomeIrisDetector.HasNearby(C.DismountEnemyDistanceMeters);
 
-        if (Player.Mounted && hasNearbyEnemy)
+        if (Player.Mounted && (hasNearbyEnemy || LastIcedotomeIrisNearby))
         {
             if (EzThrottler.Throttle(FrontlineConstants.ThrottleDismount, FrontlineConstants.DismountThrottleMs))
                 Chat.ExecuteCommand("/mount");

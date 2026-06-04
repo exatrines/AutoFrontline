@@ -29,7 +29,7 @@ public static unsafe class FrontlineDutyConfirmAutomation
         if (commencedForCurrentAddon)
             return;
 
-        if (!C.AutoEnterEnabled)
+        if (!RequiredPlugins.ShouldAutoEnter)
             return;
 
         if (!DailyFrontlineDutyText.IsDailyFrontlineMatching(addon))
