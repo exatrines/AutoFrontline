@@ -30,19 +30,19 @@ internal static class RequiredPlugins
 
     public static bool IsAutomationActive =>
         AreAllLoaded && (C.Mode == PluginMode.Manual
-            || (C.Mode == PluginMode.Auto && AutoRunSession.Active));
+            || (C.Mode == PluginMode.Loop && AutoRunSession.Active));
 
     public static bool ShouldAutoEnter =>
-        C.Mode == PluginMode.Auto && AutoRunSession.Active || C.AutoEnterEnabled;
+        C.Mode == PluginMode.Loop && AutoRunSession.Active || C.AutoEnterEnabled;
 
     public static bool ShouldAutoLeave =>
-        C.Mode == PluginMode.Auto && AutoRunSession.Active || C.AutoLeaveEnabled;
+        C.Mode == PluginMode.Loop && AutoRunSession.Active || C.AutoLeaveEnabled;
 
     public static void SyncEnabledState()
     {
         if (!AreAllLoaded && C.Mode != PluginMode.Disable)
         {
-            if (C.Mode == PluginMode.Auto)
+            if (C.Mode == PluginMode.Loop)
                 AutoRunSession.Stop();
 
             C.Mode = PluginMode.Disable;

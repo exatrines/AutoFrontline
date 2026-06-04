@@ -4,7 +4,7 @@ namespace AutoFrontline.UI;
 
 public static class SettingsTab
 {
-    private static readonly string[] ModeLabels = ["Disable", "Manual", "Auto"];
+    private static readonly string[] ModeLabels = ["Disable", "Manual", "Loop"];
 
     public static void Draw()
     {
@@ -15,11 +15,6 @@ public static class SettingsTab
     {
         DrawModeRow();
 
-        AflImGui.SectionHeader("Duty");
-        ImGui.Checkbox("Auto enter", ref C.AutoEnterEnabled);
-        ImGui.TextDisabled("Enter Frontline when Contents Finder matched Daily Frontline.");
-        ImGui.Checkbox("Auto leave", ref C.AutoLeaveEnabled);
-        ImGui.TextDisabled("Leave Frontline when Frontline result screen is opened.");
         AflImGui.SectionHeader("General");
         MountPicker.Draw();
         DrawDistanceSlider("Mount distance for target (m)", ref C.MountDistanceMeters);
@@ -30,6 +25,12 @@ public static class SettingsTab
             "Hostile mode position",
             ref C.HostileModePositionRatio,
             "0 = front ally, 1 = rearmost ally");
+
+        AflImGui.SectionHeader("Duty");
+        ImGui.Checkbox("Auto enter", ref C.AutoEnterEnabled);
+        ImGui.TextDisabled("Enter Frontline when Contents Finder matched Daily Frontline.");
+        ImGui.Checkbox("Auto leave", ref C.AutoLeaveEnabled);
+        ImGui.TextDisabled("Leave Frontline when Frontline result screen is opened.");
     }
 
     private static void DrawModeRow()
@@ -47,7 +48,7 @@ public static class SettingsTab
             var newMode = (PluginMode)modeIndex;
             if (C.Mode != newMode)
             {
-                if (newMode != PluginMode.Auto)
+                if (newMode != PluginMode.Loop)
                 {
                     AutoRunSession.Stop();
                     ContentsFinderQueueAutomation.ResetState();
@@ -61,13 +62,13 @@ public static class SettingsTab
         if (AutoRunSession.Active)
             ImGui.EndDisabled();
 
-        if (C.Mode == PluginMode.Auto)
+        if (C.Mode == PluginMode.Loop)
         {
             ImGui.SameLine();
-            ImGui.TextDisabled($"{AutoRunSession.CurrentCount} / {C.AutoMaxCount}");
+            ImGui.TextDisabled($"{AutoRunSession.CurrentCount} /");
 
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(60f);
+            ImGui.SetNextItemWidth(80f);
             var maxCount = C.AutoMaxCount;
             if (ImGui.InputInt("##AutoMaxCount", ref maxCount, 1, 5))
             {

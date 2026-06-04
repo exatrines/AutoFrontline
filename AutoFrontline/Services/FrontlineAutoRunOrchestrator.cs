@@ -4,14 +4,14 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontline.Services;
 
-/// <summary>Auto モードのループ（キュー・入室カウント・MaxCount 停止）を制御する。</summary>
+/// <summary>Loop モードのループ（キュー・入室カウント・MaxCount 停止）を制御する。</summary>
 internal static unsafe class FrontlineAutoRunOrchestrator
 {
     public static string LastPhase { get; private set; } = "Idle";
 
     public static void Update()
     {
-        if (C.Mode != PluginMode.Auto || !AutoRunSession.Active)
+        if (C.Mode != PluginMode.Loop || !AutoRunSession.Active)
         {
             LastPhase = "Idle";
             return;

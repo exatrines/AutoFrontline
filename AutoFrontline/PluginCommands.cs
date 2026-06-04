@@ -45,11 +45,11 @@ internal static class PluginCommands
 
     private static void ToggleMode()
     {
-        if (C.Mode == PluginMode.Auto && AutoRunSession.Active)
+        if (C.Mode == PluginMode.Loop && AutoRunSession.Active)
         {
             AutoRunSession.Stop();
             ContentsFinderQueueAutomation.ResetState();
-            DuoLog.Information("Auto Frontline auto run stopped.");
+            DuoLog.Information("Auto Frontline loop stopped.");
             return;
         }
 
@@ -75,7 +75,7 @@ internal static class PluginCommands
             return;
         }
 
-        if (mode != PluginMode.Auto)
+        if (mode != PluginMode.Loop)
         {
             AutoRunSession.Stop();
             ContentsFinderQueueAutomation.ResetState();

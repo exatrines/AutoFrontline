@@ -136,9 +136,9 @@ public static unsafe class DebugTab
     {
         AflImGui.SectionHeader("Status");
         ImGui.TextDisabled($"Mode: {C.Mode}");
-        if (C.Mode == PluginMode.Auto)
+        if (C.Mode == PluginMode.Loop)
         {
-            ImGui.TextDisabled($"Auto run: {(AutoRunSession.Active ? "active" : "idle")} ({AutoRunSession.CurrentCount}/{C.AutoMaxCount})");
+            ImGui.TextDisabled($"Loop: {(AutoRunSession.Active ? "active" : "idle")} ({AutoRunSession.CurrentCount}/{C.AutoMaxCount})");
             ImGui.TextDisabled($"Phase: {FrontlineAutoRunOrchestrator.LastPhase}");
             ImGui.TextDisabled($"CF queue: {ContentsFinderQueueAutomation.LastStatus}");
         }
