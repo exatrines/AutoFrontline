@@ -1,6 +1,6 @@
 namespace AutoFrontline;
 
-/// <summary>Auto モードの Start/Stop セッション状態（設定ファイルには保存しない）。</summary>
+/// <summary>Loop モードの Start/Stop セッション状態（設定ファイルには保存しない）。</summary>
 internal static class AutoRunSession
 {
     public static bool Active { get; set; }

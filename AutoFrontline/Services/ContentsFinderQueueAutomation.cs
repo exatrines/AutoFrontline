@@ -24,7 +24,7 @@ internal static unsafe class ContentsFinderQueueAutomation
 
     public static void Update()
     {
-        if (!AutoRunSession.Active || C.Mode != PluginMode.Auto)
+        if (!AutoRunSession.Active || C.Mode != PluginMode.Loop)
         {
             ResetState();
             return;
