@@ -92,6 +92,12 @@ jobs:
                 --repo "${{ github.repository }}" \
                 --prerelease \
                 --title "$TITLE"
+            else
+              gh release edit "$TAG" \
+                --repo "${{ github.repository }}" \
+                --prerelease=false \
+                --latest \
+                --title "$TITLE"
             fi
           else
             gh release create "$TAG" \
