@@ -7,8 +7,6 @@ namespace AutoFrontline.Services;
 /// <summary>フロントライン入室座標とスポーン除外半径（セッション専用、設定には保存しない）。</summary>
 internal static class FrontlineEntryZone
 {
-    private static bool wasInFrontline;
-
     public static Vector3? EntryPosition { get; private set; }
     public static bool LastMoveBlocked { get; private set; }
 
@@ -16,7 +14,8 @@ internal static class FrontlineEntryZone
     {
         var inFrontline = FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType);
 
-        if (inFrontline && !wasInFrontline && Player.Available && Player.Object != null)
+        // 入室直後は Player が未 Available のフレームがあり、遷移 edge だけでは取り逃す
+        if (inFrontline && EntryPosition == null && Player.Available && Player.Object != null)
             EntryPosition = Player.Object.Position;
 
         if (!inFrontline)
@@ -24,8 +23,6 @@ internal static class FrontlineEntryZone
             EntryPosition = null;
             LastMoveBlocked = false;
         }
-
-        wasInFrontline = inFrontline;
     }
 
     public static bool ShouldSkipMoveTarget(Vector3 target)
