@@ -10,6 +10,7 @@ public static class FrontlineAutomation
     public static void Update()
     {
         AllianceMemberCache.BeginFrame();
+        FrontlineEntryZone.Update();
         RequiredPlugins.SyncEnabledState();
         FrontlineAutoRunOrchestrator.Update();
         RotationModeAutomation.Update();
@@ -43,6 +44,9 @@ public static class FrontlineAutomation
             return;
 
         if (FollowTargetService.TryGetMoveTarget() is not Vector3 target)
+            return;
+
+        if (FrontlineEntryZone.ShouldSkipMoveTarget(target))
             return;
 
         MovementCommands.MoveTo(target);

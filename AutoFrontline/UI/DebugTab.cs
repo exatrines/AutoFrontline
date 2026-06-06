@@ -129,6 +129,20 @@ public static unsafe class DebugTab
         table.Row("Move target",
             FollowTargetService.LastMoveTarget is Vector3 move ? GameCoords.FormatDisplay(move) : "—");
 
+        table.Row("Entry position",
+            FrontlineEntryZone.EntryPosition is Vector3 entry ? GameCoords.FormatDisplay(entry) : "—");
+
+        var exclusionLabel = FrontlineEntryZone.LastMoveBlocked ? "blocked" : "ok";
+        if (FrontlineEntryZone.EntryPosition is Vector3 spawn
+            && FollowTargetService.LastMoveTarget is Vector3 lastMove)
+        {
+            var dist = FrontlineEntryZone.DistanceToEntry(lastMove);
+            exclusionLabel = $"{exclusionLabel} (target {dist:F1}m from entry)";
+        }
+
+        table.Row($"Spawn exclusion ({FrontlineConstants.SpawnExclusionRadiusMeters}m)", exclusionLabel,
+            FrontlineEntryZone.LastMoveBlocked ? ImGuiColors.DalamudOrange : null);
+
         table.End();
     }
 

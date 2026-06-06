@@ -9,6 +9,7 @@ internal static class FrontlineConstants
     public const float MoveOffsetMinMeters = 1f;
     public const float MoveOffsetMaxMeters = 3f;
     public const float PositionUnchangedThresholdMeters = 0.1f;
+    public const float SpawnExclusionRadiusMeters = 15f;
 
     public const int MountThrottleMs = 1500;
     public const int DismountThrottleMs = 1500;

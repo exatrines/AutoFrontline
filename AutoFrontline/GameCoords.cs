@@ -19,4 +19,7 @@ internal static class GameCoords
         var thresholdSq = thresholdMeters * thresholdMeters;
         return Vector3.DistanceSquared(a, b) < thresholdSq;
     }
+
+    public static bool IsWithinRadius(Vector3 a, Vector3 b, float radiusMeters) =>
+        Vector3.DistanceSquared(a, b) <= radiusMeters * radiusMeters;
 }
