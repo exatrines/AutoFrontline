@@ -25,10 +25,18 @@ public static class FollowTargetService
     public static string LastDensestMemberName { get; private set; } = string.Empty;
     public static int LastDensestNeighborCount { get; private set; }
     public static string LastSelectionMode => selectionMode.ToDebugLabel();
+    public static string CurrentFollowModeLabel => selectionMode.ToDisplayLabel();
+    public static bool IsGroupMovementMode => selectionMode == FollowSelectionMode.GroupMovement;
     public static string LastProximityEnemyName { get; private set; } = string.Empty;
     public static bool IsHostileMode => selectionMode == FollowSelectionMode.Hostile;
+    public static bool IsCommanderMode => selectionMode == FollowSelectionMode.FollowCommander;
+    public static string LastCommanderName => AllianceCommanderTracker.LatestCommanderName;
     public static int MoveRefreshIntervalMs =>
-        IsHostileMode ? ConfigIntervals.HostileModeRefreshMs : ConfigIntervals.GroupMovementRefreshMs;
+        IsCommanderMode
+            ? ConfigIntervals.GroupMovementRefreshMs
+            : IsHostileMode
+                ? ConfigIntervals.HostileModeRefreshMs
+                : ConfigIntervals.GroupMovementRefreshMs;
 
     public static void UpdateSelection()
     {
@@ -39,9 +47,37 @@ public static class FollowTargetService
         }
 
         var members = GetMembers();
+
+        if (TryCompleteCommanderFollow(members))
+            return;
+
+        if (AllianceCommanderTracker.NeedsReselect)
+        {
+            if (AllianceCommanderTracker.IsFollowPending)
+                SelectNewTarget(members);
+            else
+                SelectFallbackTarget(members);
+
+            if (!AllianceCommanderTracker.IsFollowPending || IsCommanderMode)
+                AllianceCommanderTracker.ConsumeNeedsReselect();
+
+            return;
+        }
+
         if (trackedContentId != 0 && !IsTrackedAlive(members))
-            SelectNewTarget(members);
-        else if (trackedContentId == 0 || ShouldReselectOnTimer())
+        {
+            if (selectionMode == FollowSelectionMode.FollowCommander)
+                AllianceCommanderTracker.ClearDueToDeath();
+
+            if (selectionMode == FollowSelectionMode.FollowCommander)
+                SelectFallbackTarget(members);
+            else
+                SelectNewTarget(members);
+
+            return;
+        }
+
+        if (trackedContentId == 0 || ShouldReselectOnTimer())
             SelectNewTarget(members);
     }
 
@@ -115,6 +151,27 @@ public static class FollowTargetService
         return LastMoveTarget;
     }
 
+    private static bool TryCompleteCommanderFollow(IReadOnlyList<AllianceMemberSnapshot> members)
+    {
+        if (selectionMode != FollowSelectionMode.FollowCommander)
+            return false;
+
+        var tracked = FindTracked(members);
+        if (tracked == null)
+            return false;
+
+        if (!GameCoords.IsWithinRadius(
+                Player.Object!.Position,
+                tracked.Value.Position,
+                FrontlineConstants.CommanderFollowArrivalDistanceMeters))
+            return false;
+
+        AllianceCommanderTracker.CompleteFollow();
+        SelectFallbackTarget(members);
+        AllianceCommanderTracker.ConsumeNeedsReselect();
+        return true;
+    }
+
     private static bool TryResolveAnchorPosition(out Vector3 anchor)
     {
         anchor = default;
@@ -123,7 +180,16 @@ public static class FollowTargetService
         var tracked = FindTracked(members);
         if (tracked == null || tracked.Value.IsDead)
         {
-            SelectNewTarget(members);
+            if (selectionMode == FollowSelectionMode.FollowCommander)
+            {
+                AllianceCommanderTracker.ClearDueToDeath();
+                SelectFallbackTarget(members);
+            }
+            else
+            {
+                SelectNewTarget(members);
+            }
+
             tracked = FindTracked(members);
         }
 
@@ -152,6 +218,25 @@ public static class FollowTargetService
     }
 
     private static void SelectNewTarget(IReadOnlyList<AllianceMemberSnapshot> members)
+    {
+        lastSelectionTick = Environment.TickCount64;
+
+        if (Player.Object == null)
+        {
+            ClearTarget();
+            return;
+        }
+
+        if (AllianceCommanderTracker.TryGetCommander(members, out var commander))
+        {
+            ApplyTarget(commander, FollowSelectionMode.FollowCommander, densestNeighborCount: 0);
+            return;
+        }
+
+        SelectFallbackTarget(members);
+    }
+
+    private static void SelectFallbackTarget(IReadOnlyList<AllianceMemberSnapshot> members)
     {
         lastSelectionTick = Environment.TickCount64;
 
@@ -235,6 +320,9 @@ public static class FollowTargetService
 
     private static bool ShouldReselectOnTimer()
     {
+        if (selectionMode == FollowSelectionMode.FollowCommander)
+            return false;
+
         if (Environment.TickCount64 - lastSelectionTick < MoveRefreshIntervalMs)
             return false;
 

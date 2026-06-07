@@ -74,12 +74,17 @@ public static unsafe class DebugTab
         if (!table.Begin())
             return;
 
+        table.Row("追従モード", FollowTargetService.CurrentFollowModeLabel, GetFollowModeColor());
+
         var tracked = FollowTargetService.LastPickedMemberName;
         table.Row("Tracked", string.IsNullOrEmpty(tracked) ? "—" : tracked);
+        table.Row("Latest commander",
+            string.IsNullOrEmpty(AllianceCommanderTracker.LatestCommanderName)
+                ? "—"
+                : AllianceCommanderTracker.LatestCommanderName);
+        table.Row("Commander follow", GetCommanderFollowState());
         table.Row("Job", GetTrackedJobName());
         table.Row("Distance", $"{TrackedPlayerSync.LastDistanceToTracked:F1} m");
-        if (!string.IsNullOrEmpty(FollowTargetService.LastSelectionMode))
-            table.Row("Selection mode", FollowTargetService.LastSelectionMode);
         if (!string.IsNullOrEmpty(FollowTargetService.LastProximityEnemyName))
             table.Row("Proximity enemy", FollowTargetService.LastProximityEnemyName);
 
@@ -183,6 +188,25 @@ public static unsafe class DebugTab
             ImGui.Text($"{label}: {message}");
         else
             ImGui.TextDisabled($"{label}: —");
+    }
+
+    private static Vector4? GetFollowModeColor()
+    {
+        if (FollowTargetService.IsCommanderMode)
+            return ImGuiColors.ParsedGold;
+        if (FollowTargetService.IsHostileMode)
+            return ImGuiColors.DalamudRed;
+        if (FollowTargetService.IsGroupMovementMode)
+            return ImGuiColors.HealerGreen;
+        return null;
+    }
+
+    private static string GetCommanderFollowState()
+    {
+        if (AllianceCommanderTracker.LatestCommanderContentId == 0)
+            return "—";
+
+        return AllianceCommanderTracker.IsFollowPending ? "Pending" : "Completed";
     }
 
     private static string GetTrackedJobName()

@@ -6,7 +6,7 @@ internal static class FollowMovePlanner
 {
     public static Vector3 CreateDestination(Vector3 anchor, FollowSelectionMode mode)
     {
-        if (mode == FollowSelectionMode.Hostile)
+        if (mode is FollowSelectionMode.Hostile or FollowSelectionMode.FollowCommander)
             return anchor;
 
         return RandomOffset(
