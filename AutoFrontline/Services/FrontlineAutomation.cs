@@ -10,6 +10,7 @@ public static class FrontlineAutomation
     public static void Update()
     {
         AllianceMemberCache.BeginFrame();
+        AllianceCommanderTracker.Update();
         FrontlineEntryZone.Update();
         RequiredPlugins.SyncEnabledState();
         FrontlineAutoRunOrchestrator.Update();
