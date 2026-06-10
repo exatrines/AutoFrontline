@@ -18,6 +18,7 @@ public static class ConfigWindow
         {
             DrawTab("General", GeneralTab.Draw, null);
             DrawTab("Settings", SettingsTab.Draw, null);
+            DrawTab("Experimental", ExperimentalTab.Draw, ImGuiColors.DalamudGrey);
             DrawTab("Debug", DebugTab.Draw, ImGuiColors.DalamudGrey);
             ImGui.EndTabBar();
         }

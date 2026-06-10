@@ -33,9 +33,15 @@ public static class FrontlineAutomation
 
         FollowTargetService.UpdateSelection();
         ClosestEnemyPlayerTargeting.Update();
+        PvpLimitBreakAutomation.Update();
         TrackedPlayerSync.Update();
 
+        NaviStackGuard.Update();
+
         if (TrackedPlayerSync.ShouldDeferMovement)
+            return;
+
+        if (NaviStackGuard.ShouldSuppressMoveRefresh())
             return;
 
         if (!EzThrottler.Throttle(FrontlineConstants.ThrottleMove, FollowTargetService.MoveRefreshIntervalMs))
@@ -51,5 +57,6 @@ public static class FrontlineAutomation
             return;
 
         MovementCommands.MoveTo(target);
+        NaviStackGuard.OnMoveIssued(target);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AutoFrontline;
+﻿using System.Collections.Generic;
+
+namespace AutoFrontline;
 
 public sealed class Configuration
 {
@@ -36,6 +38,9 @@ public sealed class Configuration
 
     /// <summary>FrontlineRecord 表示時に自動でコンテンツ退出する。</summary>
     public bool AutoLeaveEnabled = true;
+
+    /// <summary>ジョブ別 Auto Limit Break（キー: PvpLimitBreakCatalog の Entry Id）。</summary>
+    public Dictionary<string, bool> AutoLimitBreakByEntryId = new();
 
     public void MigrateIfNeeded()
     {

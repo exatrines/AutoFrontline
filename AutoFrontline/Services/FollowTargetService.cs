@@ -304,6 +304,7 @@ public static class FollowTargetService
         ClearMoveDebug();
         LastPickedMemberName = string.Empty;
         LastProximityEnemyName = string.Empty;
+        NaviStackGuard.Reset();
     }
 
     private static void ClearMoveDebug()

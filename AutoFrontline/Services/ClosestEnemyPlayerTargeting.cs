@@ -30,8 +30,23 @@ internal static class ClosestEnemyPlayerTargeting
                     : ConfigIntervals.GroupMovementRefreshMs))
             return;
 
+        if (FrontlineEntryZone.ShouldSkipEnemyTargeting())
+        {
+            if (Svc.Targets.Target != null)
+                Svc.Targets.Target = null;
+
+            ClearDebugState();
+            return;
+        }
+
         var allies = AllianceMemberCache.GetMembers();
         if (!NearbyEnemyDetector.TryGetClosestEnemy(allies, out var enemy, out var distance))
+        {
+            ClearDebugState();
+            return;
+        }
+
+        if (FrontlineEntryZone.ShouldSkipEnemyTargeting(enemy.Position))
         {
             ClearDebugState();
             return;
