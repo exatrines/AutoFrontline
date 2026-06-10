@@ -2,6 +2,7 @@
 using AutoFrontline.Services;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
+using ECommons;
 using ECommons.SimpleGui;
 
 namespace AutoFrontline;
@@ -14,7 +15,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
-        ECommonsMain.Init(pluginInterface, this);
+        ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
 
         C = EzConfig.Init<Configuration>();
         C.MigrateIfNeeded();

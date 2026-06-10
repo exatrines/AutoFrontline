@@ -18,6 +18,7 @@ public static unsafe class DebugTab
         DrawSelfSection();
         DrawTargetSection();
         DrawMovementSection();
+        DrawRotationSection();
         DrawStatusSection();
     }
 
@@ -90,6 +91,7 @@ public static unsafe class DebugTab
 
         var enemy = ClosestEnemyPlayerTargeting.LastClosestEnemy;
         table.Row("Combat target", enemy?.Name.ToString() ?? "—");
+        table.Row("PvP LB", GetPvpLimitBreakDebugText());
         if (enemy != null)
             table.Row("Combat distance", $"{ClosestEnemyPlayerTargeting.LastClosestEnemyDistance:F1} m");
 
@@ -137,18 +139,108 @@ public static unsafe class DebugTab
         table.Row("Entry position",
             FrontlineEntryZone.EntryPosition is Vector3 entry ? GameCoords.FormatDisplay(entry) : "—");
 
-        var exclusionLabel = FrontlineEntryZone.LastMoveBlocked ? "blocked" : "ok";
+        var exclusionLabel = FrontlineEntryZone.LastMoveBlocked || FrontlineEntryZone.LastTargetBlocked
+            ? "blocked"
+            : "ok";
         if (FrontlineEntryZone.EntryPosition is Vector3 spawn
             && FollowTargetService.LastMoveTarget is Vector3 lastMove)
         {
             var dist = FrontlineEntryZone.DistanceToEntry(lastMove);
-            exclusionLabel = $"{exclusionLabel} (target {dist:F1}m from entry)";
+            exclusionLabel = $"{exclusionLabel} (move target {dist:F1}m from entry)";
+        }
+
+        if (FrontlineEntryZone.LastTargetBlocked && Player.Available && Player.Object != null)
+        {
+            var playerDist = FrontlineEntryZone.DistanceToEntry(Player.Object.Position);
+            if (playerDist is float dist)
+                exclusionLabel = $"{exclusionLabel} (player {dist:F1}m from entry)";
         }
 
         table.Row($"Spawn exclusion ({FrontlineConstants.SpawnExclusionRadiusMeters}m)", exclusionLabel,
-            FrontlineEntryZone.LastMoveBlocked ? ImGuiColors.DalamudOrange : null);
+            FrontlineEntryZone.LastMoveBlocked || FrontlineEntryZone.LastTargetBlocked
+                ? ImGuiColors.DalamudOrange
+                : null);
+
+        table.Row("Stack refresh",
+            $"{NaviStackGuard.RefreshCount}/{FrontlineConstants.NaviStackRefreshThreshold}");
+        table.Row("Stack lock", NaviStackGuard.IsRefreshLocked ? "locked" : "—",
+            NaviStackGuard.IsRefreshLocked ? ImGuiColors.DalamudOrange : null);
+        table.Row("Locked target", FormatLockedTarget());
 
         table.End();
+    }
+
+    private static string FormatLockedTarget()
+    {
+        if (NaviStackGuard.LockedTarget is not Vector3 locked)
+            return "—";
+
+        if (Player.Object == null)
+            return GameCoords.FormatDisplay(locked);
+
+        var dist = Vector3.Distance(Player.Object.Position, locked);
+        return $"{GameCoords.FormatDisplay(locked)} ({dist:F1} m)";
+    }
+
+    private static void DrawRotationSection()
+    {
+        AflImGui.SectionHeader("Rotation");
+
+        var table = new DebugTable("##AflDbgRotation");
+        if (!table.Begin())
+            return;
+
+        var rsrLoaded = RequiredPlugins.IsLoaded(RequiredPlugins.RotationSolver.InternalName);
+        table.Row("RSR loaded", rsrLoaded ? "Yes" : "No");
+
+        if (!rsrLoaded)
+        {
+            table.End();
+            return;
+        }
+
+        var snapshot = RotationSolverState.GetSnapshot();
+        if (!snapshot.Resolved)
+        {
+            table.Row("RSR state", RotationSolverOperatingState.Unknown.ToString(), ImGuiColors.DalamudRed);
+            table.Row("RSR source", string.IsNullOrEmpty(snapshot.ReadSource) ? "unresolved" : snapshot.ReadSource);
+            table.End();
+            return;
+        }
+
+        table.Row("RSR state", snapshot.DerivedState.ToString(), GetRsrStateColor(snapshot.DerivedState));
+        table.Row("RSR UI", string.IsNullOrEmpty(snapshot.DisplayState) ? "—" : snapshot.DisplayState);
+        table.Row("RSR raw",
+            $"State={FormatBool(snapshot.State)}, IsManual={FormatBool(snapshot.IsManual)}, " +
+            $"Targeting={FormatTargetingType(snapshot.TargetingType)}, PvP={FormatBool(snapshot.IsPvPStateEnabled)}");
+        table.Row("RSR source", snapshot.ReadSource);
+        table.Row("RSR ALC", string.IsNullOrEmpty(snapshot.AlcAssemblies) ? "—" : snapshot.AlcAssemblies);
+        table.Row("RSR assembly", string.IsNullOrEmpty(snapshot.AssemblyName) ? "—" : snapshot.AssemblyName);
+        table.Row("Manual enforce", GetManualEnforceText(snapshot.DerivedState));
+
+        table.End();
+    }
+
+    private static string FormatBool(bool value) => value ? "true" : "false";
+
+    private static string FormatTargetingType(string targetingType) =>
+        string.IsNullOrEmpty(targetingType) ? "—" : targetingType;
+
+    private static Vector4? GetRsrStateColor(RotationSolverOperatingState state) =>
+        state switch
+        {
+            RotationSolverOperatingState.Manual => ImGuiColors.HealerGreen,
+            RotationSolverOperatingState.Off => ImGuiColors.DalamudGrey,
+            RotationSolverOperatingState.Unknown => ImGuiColors.DalamudRed,
+            _ => ImGuiColors.DalamudOrange,
+        };
+
+    private static string GetManualEnforceText(RotationSolverOperatingState derivedState)
+    {
+        if (!AutomationContext.CanRunInFrontlineMatch)
+            return "—";
+
+        return derivedState == RotationSolverOperatingState.Manual ? "skip" : "would send";
     }
 
     private static void DrawStatusSection()
@@ -188,6 +280,18 @@ public static unsafe class DebugTab
             ImGui.Text($"{label}: {message}");
         else
             ImGui.TextDisabled($"{label}: —");
+    }
+
+    private static string GetPvpLimitBreakDebugText()
+    {
+        if (!FollowTargetService.IsHostileMode)
+            return "—";
+
+        if (!PvpLimitBreakCatalog.TryGetEnabledActionForJob(Player.Job, out var actionName))
+            return "Disabled";
+
+        var status = PvpLimitBreakAutomation.LastAttempted ? "sent" : "armed";
+        return $"{actionName} ({status})";
     }
 
     private static Vector4? GetFollowModeColor()
