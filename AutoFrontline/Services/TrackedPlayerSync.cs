@@ -36,8 +36,10 @@ public static unsafe class TrackedPlayerSync
     }
 
     private static bool ShouldTryMountForMoveDistance() =>
-        FollowTargetService.TryGetMoveDestinationDistance(out var distance)
-        && distance >= C.MountDistanceMeters;
+        InitialMovementMode.TryGetMoveDestinationDistance(out var initialDistance)
+            ? initialDistance >= C.MountDistanceMeters
+            : FollowTargetService.TryGetMoveDestinationDistance(out var distance)
+              && distance >= C.MountDistanceMeters;
 
     private static void SyncMount()
     {

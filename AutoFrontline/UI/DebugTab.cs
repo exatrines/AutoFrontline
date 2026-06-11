@@ -75,7 +75,7 @@ public static unsafe class DebugTab
         if (!table.Begin())
             return;
 
-        table.Row("追従モード", FollowTargetService.CurrentFollowModeLabel, GetFollowModeColor());
+        table.Row("追従モード", GetFollowModeLabel(), GetFollowModeColor());
 
         var tracked = FollowTargetService.LastPickedMemberName;
         table.Row("Tracked", string.IsNullOrEmpty(tracked) ? "—" : tracked);
@@ -134,7 +134,11 @@ public static unsafe class DebugTab
             table.Row("Move anchor", GameCoords.FormatDisplay(anchor));
 
         table.Row("Move target",
-            FollowTargetService.LastMoveTarget is Vector3 move ? GameCoords.FormatDisplay(move) : "—");
+            InitialMovementMode.IsActive && InitialMovementMode.FirstExitPosition is Vector3 initialMove
+                ? $"{GameCoords.FormatDisplay(initialMove)} (initial)"
+                : FollowTargetService.LastMoveTarget is Vector3 move
+                    ? GameCoords.FormatDisplay(move)
+                    : "—");
 
         table.Row("Entry position",
             FrontlineEntryZone.EntryPosition is Vector3 entry ? GameCoords.FormatDisplay(entry) : "—");
@@ -161,25 +165,36 @@ public static unsafe class DebugTab
                 ? ImGuiColors.DalamudOrange
                 : null);
 
-        table.Row("Stack refresh",
-            $"{NaviStackGuard.RefreshCount}/{FrontlineConstants.NaviStackRefreshThreshold}");
-        table.Row("Stack lock", NaviStackGuard.IsRefreshLocked ? "locked" : "—",
-            NaviStackGuard.IsRefreshLocked ? ImGuiColors.DalamudOrange : null);
-        table.Row("Locked target", FormatLockedTarget());
+        table.Row("Initial movement", InitialMovementMode.IsActive ? "active" : "—",
+            InitialMovementMode.IsActive ? ImGuiColors.DalamudOrange : null);
+        table.Row("First exit pos.",
+            InitialMovementMode.FirstExitPosition is Vector3 firstExit
+                ? GameCoords.FormatDisplay(firstExit)
+                : "—");
+        if (InitialMovementMode.FirstExitPosition == null
+            && FrontlineEntryZone.EntryPosition is Vector3 spawnCenter
+            && Player.Available
+            && Player.Object != null)
+        {
+            var recordDist = GameCoords.HorizontalDistance(spawnCenter, Player.Object.Position);
+            table.Row(
+                $"Record ring ({FrontlineConstants.InitialMovementRecordRadiusMeters}m XY)",
+                $"{recordDist:F1} m");
+        }
+        if (InitialMovementMode.IsActive && InitialMovementMode.DistanceToAnchor() is float anchorDist)
+            table.Row("Initial move dist.", $"{anchorDist:F1} m");
 
         table.End();
-    }
 
-    private static string FormatLockedTarget()
-    {
-        if (NaviStackGuard.LockedTarget is not Vector3 locked)
-            return "—";
+        if (ImGui.Button("Reset initial (spawn + first exit)"))
+        {
+            if (InitialMovementMode.DebugResetInitialState())
+                Svc.Chat.Print("[AutoFrontline] Initial state reset at current position.");
+            else
+                Svc.Chat.Print("[AutoFrontline] Initial reset failed (not in Frontline or player unavailable).");
+        }
 
-        if (Player.Object == null)
-            return GameCoords.FormatDisplay(locked);
-
-        var dist = Vector3.Distance(Player.Object.Position, locked);
-        return $"{GameCoords.FormatDisplay(locked)} ({dist:F1} m)";
+        ImGui.TextDisabled("Recaptures spawn center here and clears first exit. Use at the real spawn after a hot reload.");
     }
 
     private static void DrawRotationSection()
@@ -294,8 +309,19 @@ public static unsafe class DebugTab
         return $"{actionName} ({status})";
     }
 
+    private static string GetFollowModeLabel()
+    {
+        if (InitialMovementMode.IsActive)
+            return $"初期移動（脱出先へ） / {FollowTargetService.CurrentFollowModeLabel}";
+
+        return FollowTargetService.CurrentFollowModeLabel;
+    }
+
     private static Vector4? GetFollowModeColor()
     {
+        if (InitialMovementMode.IsActive)
+            return ImGuiColors.DalamudOrange;
+
         if (FollowTargetService.IsCommanderMode)
             return ImGuiColors.ParsedGold;
         if (FollowTargetService.IsHostileMode)

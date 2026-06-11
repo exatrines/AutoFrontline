@@ -22,4 +22,27 @@ internal static class GameCoords
 
     public static bool IsWithinRadius(Vector3 a, Vector3 b, float radiusMeters) =>
         Vector3.DistanceSquared(a, b) <= radiusMeters * radiusMeters;
+
+    public static float HorizontalDistance(Vector3 a, Vector3 b)
+    {
+        var dx = a.X - b.X;
+        var dy = a.Y - b.Y;
+        return MathF.Sqrt(dx * dx + dy * dy);
+    }
+
+    public static bool AreNearHorizontal(Vector3 a, Vector3 b, float thresholdMeters)
+    {
+        var thresholdSq = thresholdMeters * thresholdMeters;
+        var dx = a.X - b.X;
+        var dy = a.Y - b.Y;
+        return dx * dx + dy * dy <= thresholdSq;
+    }
+
+    public static bool IsWithinHorizontalRadius(Vector3 center, Vector3 point, float radiusMeters)
+    {
+        var radiusSq = radiusMeters * radiusMeters;
+        var dx = center.X - point.X;
+        var dy = center.Y - point.Y;
+        return dx * dx + dy * dy <= radiusSq;
+    }
 }
