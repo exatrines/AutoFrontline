@@ -90,9 +90,12 @@ public static unsafe class DebugTab
             table.Row("Proximity enemy", FollowTargetService.LastProximityEnemyName);
 
         var enemy = ClosestEnemyPlayerTargeting.LastClosestEnemy;
-        table.Row("Combat target", enemy?.Name.ToString() ?? "—");
+        table.Row("Combat target",
+            ClosestEnemyPlayerTargeting.LastTargetIsIcedotomeIris
+                ? "Icedotome Iris"
+                : enemy?.Name.ToString() ?? "—");
         table.Row("PvP LB", GetPvpLimitBreakDebugText());
-        if (enemy != null)
+        if (ClosestEnemyPlayerTargeting.LastTargetIsIcedotomeIris || enemy != null)
             table.Row("Combat distance", $"{ClosestEnemyPlayerTargeting.LastClosestEnemyDistance:F1} m");
 
         if (!string.IsNullOrEmpty(FollowTargetService.LastDensestMemberName))
