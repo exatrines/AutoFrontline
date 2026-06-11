@@ -25,16 +25,14 @@ internal static class FrontlineConstants
     public const float CommanderFollowArrivalDistanceMeters = 5f;
 
     /// <summary>入室地点からこの半径（m）以内への moveto をブロック（スポーン付近への誤移動防止）。</summary>
-    public const float SpawnExclusionRadiusMeters = 20f;
+    public const float SpawnExclusionRadiusMeters = 25f;
 
-    /// <summary>moveto 連続リフレッシュがこの回数に達し、かつ位置が動いていなければスタック対策を発動。</summary>
-    public const int NaviStackRefreshThreshold = 10;
+    /// <summary>初回脱出地点を記録する半径の余白（m）。記録半径 = SpawnExclusionRadius + この値。</summary>
+    public const float InitialMovementRecordRadiusOffsetMeters = 20f;
 
-    /// <summary>スタック判定で「プレイヤーがほぼ動いていない」とみなす移動距離（m）。</summary>
-    public const float NaviStackPositionThresholdMeters = 1f;
-
-    /// <summary>スタックロック中、ロック先へこの距離（m）以内に入ったらロックを解除。</summary>
-    public const float NaviStackArrivalDistanceMeters = 2f;
+    /// <summary>初回脱出地点を記録する水平距離（m）。SpawnExclusionRadius + InitialMovementRecordRadiusOffset。</summary>
+    public const float InitialMovementRecordRadiusMeters =
+        SpawnExclusionRadiusMeters + InitialMovementRecordRadiusOffsetMeters;
 
     /// <summary>マウント試行コマンドの最小間隔（ms）。</summary>
     public const int MountThrottleMs = 1500;

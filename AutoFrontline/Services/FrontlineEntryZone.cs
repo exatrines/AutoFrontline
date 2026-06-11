@@ -71,4 +71,18 @@ internal static class FrontlineEntryZone
 
     public static float? DistanceToEntry(Vector3 position) =>
         EntryPosition is Vector3 entry ? Vector3.Distance(entry, position) : null;
+
+    /// <summary>Debug: 現在地をスポーン中心として再記録する（ホットリロード後の誤記録修正用）。</summary>
+    public static bool DebugRecaptureEntryPosition()
+    {
+        if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType)
+            || !Player.Available
+            || Player.Object == null)
+            return false;
+
+        EntryPosition = Player.Object.Position;
+        LastMoveBlocked = false;
+        LastTargetBlocked = false;
+        return true;
+    }
 }

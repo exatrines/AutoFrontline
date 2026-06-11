@@ -32,16 +32,12 @@ public static class FrontlineAutomation
             return;
 
         FollowTargetService.UpdateSelection();
+        InitialMovementMode.Update();
         ClosestEnemyPlayerTargeting.Update();
         PvpLimitBreakAutomation.Update();
         TrackedPlayerSync.Update();
 
-        NaviStackGuard.Update();
-
         if (TrackedPlayerSync.ShouldDeferMovement)
-            return;
-
-        if (NaviStackGuard.ShouldSuppressMoveRefresh())
             return;
 
         if (!EzThrottler.Throttle(FrontlineConstants.ThrottleMove, FollowTargetService.MoveRefreshIntervalMs))
@@ -50,13 +46,16 @@ public static class FrontlineAutomation
         if (!PlayerMovementGate.CanIssueVnavMoveTo)
             return;
 
-        if (FollowTargetService.TryGetMoveTarget() is not Vector3 target)
+        var target = InitialMovementMode.TryGetMoveTarget(out var initialTarget)
+            ? initialTarget
+            : FollowTargetService.TryGetMoveTarget();
+
+        if (target is not Vector3 moveTarget)
             return;
 
-        if (FrontlineEntryZone.ShouldSkipMoveTarget(target))
+        if (FrontlineEntryZone.ShouldSkipMoveTarget(moveTarget))
             return;
 
-        MovementCommands.MoveTo(target);
-        NaviStackGuard.OnMoveIssued(target);
+        MovementCommands.MoveTo(moveTarget);
     }
 }
