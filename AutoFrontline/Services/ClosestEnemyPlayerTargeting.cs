@@ -1,13 +1,15 @@
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>敵プレイヤー（自分・PT・アライアンス以外）のうち最も近い対象をターゲットする。</summary>
+/// <summary>敵プレイヤーとアイスドトームリスのうち最も近い対象をターゲットする。</summary>
 internal static class ClosestEnemyPlayerTargeting
 {
     public static IPlayerCharacter LastClosestEnemy { get; private set; }
     public static float LastClosestEnemyDistance { get; private set; }
+    public static bool LastTargetIsIcedotomeIris { get; private set; }
 
     public static void Update()
     {
@@ -39,31 +41,56 @@ internal static class ClosestEnemyPlayerTargeting
             return;
         }
 
-        var allies = AllianceMemberCache.GetMembers();
-        if (!NearbyEnemyDetector.TryGetClosestEnemy(allies, out var enemy, out var distance))
+        if (!TrySelectClosestCombatTarget(out var target, out var distance, out var isIris))
         {
             ClearDebugState();
             return;
         }
 
-        if (FrontlineEntryZone.ShouldSkipEnemyTargeting(enemy.Position))
-        {
-            ClearDebugState();
-            return;
-        }
-
-        LastClosestEnemy = enemy;
+        LastClosestEnemy = isIris ? null : target as IPlayerCharacter;
         LastClosestEnemyDistance = distance;
+        LastTargetIsIcedotomeIris = isIris;
 
-        if (Svc.Targets.Target?.GameObjectId == enemy.GameObjectId)
+        if (Svc.Targets.Target?.GameObjectId == target.GameObjectId)
             return;
 
-        Svc.Targets.Target = enemy;
+        Svc.Targets.Target = target;
+    }
+
+    private static bool TrySelectClosestCombatTarget(
+        out IGameObject target,
+        out float distanceMeters,
+        out bool isIcedotomeIris)
+    {
+        target = null!;
+        distanceMeters = float.MaxValue;
+        isIcedotomeIris = false;
+
+        var allies = AllianceMemberCache.GetMembers();
+
+        if (NearbyEnemyDetector.TryGetClosestEnemy(allies, out var enemy, out var enemyDistance)
+            && !FrontlineEntryZone.ShouldSkipEnemyTargeting(enemy.Position))
+        {
+            target = enemy;
+            distanceMeters = enemyDistance;
+        }
+
+        if (IcedotomeIrisDetector.TryGetClosest(float.MaxValue, out var iris, out var irisDistance)
+            && !FrontlineEntryZone.ShouldSkipEnemyTargeting(iris.Position)
+            && irisDistance < distanceMeters)
+        {
+            target = iris;
+            distanceMeters = irisDistance;
+            isIcedotomeIris = true;
+        }
+
+        return target != null;
     }
 
     private static void ClearDebugState()
     {
         LastClosestEnemy = null;
         LastClosestEnemyDistance = 0;
+        LastTargetIsIcedotomeIris = false;
     }
 }
