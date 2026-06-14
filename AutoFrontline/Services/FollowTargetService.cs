@@ -51,6 +51,13 @@ public static class FollowTargetService
         if (TryCompleteCommanderFollow(members))
             return;
 
+        if (selectionMode == FollowSelectionMode.FollowCommander && ShouldPreferCombatMode(members))
+        {
+            AllianceCommanderTracker.DismissFollowRequest();
+            SelectFallbackTarget(members);
+            return;
+        }
+
         if (AllianceCommanderTracker.NeedsReselect)
         {
             if (AllianceCommanderTracker.IsFollowPending)
@@ -160,15 +167,10 @@ public static class FollowTargetService
         if (tracked == null)
             return false;
 
-        if (!GameCoords.IsWithinRadius(
-                Player.Object!.Position,
-                tracked.Value.Position,
-                FrontlineConstants.CommanderFollowArrivalDistanceMeters))
+        if (!IsWithinCommanderFollowArrival(tracked.Value))
             return false;
 
-        AllianceCommanderTracker.CompleteFollow();
-        SelectFallbackTarget(members);
-        AllianceCommanderTracker.ConsumeNeedsReselect();
+        CompleteCommanderFollowAndFallback(members);
         return true;
     }
 
@@ -227,8 +229,21 @@ public static class FollowTargetService
             return;
         }
 
+        if (ShouldPreferCombatMode(members))
+        {
+            AllianceCommanderTracker.DismissFollowRequest();
+            SelectFallbackTarget(members);
+            return;
+        }
+
         if (AllianceCommanderTracker.TryGetCommander(members, out var commander))
         {
+            if (IsWithinCommanderFollowArrival(commander))
+            {
+                CompleteCommanderFollowAndFallback(members);
+                return;
+            }
+
             ApplyTarget(commander, FollowSelectionMode.FollowCommander, densestNeighborCount: 0);
             return;
         }
@@ -316,6 +331,27 @@ public static class FollowTargetService
         LastDensestMemberName = string.Empty;
         LastDensestNeighborCount = 0;
         lastNaviRebuildTick = 0;
+    }
+
+    private static bool ShouldPreferCombatMode(IReadOnlyList<AllianceMemberSnapshot> members) =>
+        HostileModeFollow.TryCreateSnapshot(members, out _);
+
+    private static bool IsWithinCommanderFollowArrival(AllianceMemberSnapshot commander)
+    {
+        if (Player.Object == null)
+            return false;
+
+        return GameCoords.IsWithinRadius(
+            Player.Object.Position,
+            commander.Position,
+            FrontlineConstants.CommanderFollowArrivalDistanceMeters);
+    }
+
+    private static void CompleteCommanderFollowAndFallback(IReadOnlyList<AllianceMemberSnapshot> members)
+    {
+        AllianceCommanderTracker.CompleteFollow();
+        SelectFallbackTarget(members);
+        AllianceCommanderTracker.ConsumeNeedsReselect();
     }
 
     private static bool ShouldReselectOnTimer()

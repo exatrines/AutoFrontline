@@ -39,11 +39,11 @@ internal static class HostileModeFollow
     public static Vector3 GetNavPosition(in HostileFollowSnapshot snapshot)
     {
         var allies = snapshot.AlliesNearEnemy;
+        if (allies.Count == 1)
+            return allies[0].Position;
+
         var first = allies[0].Position;
-        var lastIndex = Math.Min(
-            FrontlineConstants.EnemyProximityFrontlineAllyCount - 1,
-            allies.Count - 1);
-        var last = allies[lastIndex].Position;
+        var last = allies[^1].Position;
         return Vector3.Lerp(first, last, C.HostileModePositionRatio);
     }
 
@@ -58,7 +58,6 @@ internal static class HostileModeFollow
             .Where(m => !m.IsDead && !AllyMemberFilters.IsSelf(m))
             .Where(m => Vector3.DistanceSquared(enemyPosition, m.Position) <= maxDistanceSq)
             .OrderBy(m => Vector3.Distance(enemyPosition, m.Position))
-            .Take(FrontlineConstants.EnemyProximityFrontlineAllyCount)
             .ToList();
     }
 }

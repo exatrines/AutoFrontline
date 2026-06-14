@@ -76,6 +76,9 @@ public static class AllianceCommanderTracker
 
     public static void ConsumeNeedsReselect() => NeedsReselect = false;
 
+    /// <summary>戦闘優先などで軍師追従要求を取り消す（LatestCommander は Debug 用に残す）。</summary>
+    public static void DismissFollowRequest() => IsFollowPending = false;
+
     public static void Clear()
     {
         LatestCommanderContentId = 0;
@@ -101,6 +104,10 @@ public static class AllianceCommanderTracker
 
         LatestCommanderContentId = member.ContentId;
         LatestCommanderName = member.Name;
+
+        if (HostileModeFollow.TryCreateSnapshot(members, out _))
+            return;
+
         IsFollowPending = true;
         NeedsReselect = true;
     }

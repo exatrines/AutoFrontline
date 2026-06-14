@@ -9,9 +9,6 @@ internal static class FrontlineConstants
     /// <summary>敵対モードで最寄り敵・付近味方を探索する半径（m）。</summary>
     public const float EnemyProximityFollowRadiusMeters = 30f;
 
-    /// <summary>敵対モードで敵付近から取得する味方の最大人数（先頭〜末尾間でナビ位置を補間）。</summary>
-    public const int EnemyProximityFrontlineAllyCount = 10;
-
     /// <summary>集団移動の moveto 先に付与するランダムオフセットの最小距離（m）。</summary>
     public const float MoveOffsetMinMeters = 1f;
 
@@ -21,8 +18,8 @@ internal static class FrontlineConstants
     /// <summary>追従対象の座標が変わっていないとみなす距離（m）。この範囲内なら moveto 再発行を抑制。</summary>
     public const float PositionUnchangedThresholdMeters = 0.1f;
 
-    /// <summary>指揮官追従モードで「到着済み」とみなし追従を止める距離（m）。</summary>
-    public const float CommanderFollowArrivalDistanceMeters = 5f;
+    /// <summary>軍師追従モードで「到着済み」とみなし追従を止める距離（m）。</summary>
+    public const float CommanderFollowArrivalDistanceMeters = 15f;
 
     /// <summary>入室地点からこの半径（m）以内への moveto をブロック（スポーン付近への誤移動防止）。</summary>
     public const float SpawnExclusionRadiusMeters = 25f;
