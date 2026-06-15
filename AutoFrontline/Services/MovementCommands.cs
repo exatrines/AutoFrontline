@@ -7,4 +7,7 @@ internal static class MovementCommands
 {
     public static void MoveTo(Vector3 target) =>
         Chat.ExecuteCommand($"/vnav moveto {GameCoords.FormatCommand(target)}");
+
+    public static void Stop() =>
+        Chat.ExecuteCommand("/vnav stop");
 }

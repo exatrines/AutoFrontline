@@ -30,6 +30,7 @@ public static class FollowTargetService
     public static string LastProximityEnemyName { get; private set; } = string.Empty;
     public static bool IsHostileMode => selectionMode == FollowSelectionMode.Hostile;
     public static bool IsCommanderMode => selectionMode == FollowSelectionMode.FollowCommander;
+    internal static FollowSelectionMode SelectionMode => selectionMode;
     public static string LastCommanderName => AllianceCommanderTracker.LatestCommanderName;
     public static int MoveRefreshIntervalMs =>
         IsCommanderMode

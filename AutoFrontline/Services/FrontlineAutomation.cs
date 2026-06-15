@@ -7,6 +7,8 @@ namespace AutoFrontline.Services;
 /// <summary>フレームごとの自動化オーケストレーション。</summary>
 public static class FrontlineAutomation
 {
+    private static bool wasAlive = true;
+
     public static void Update()
     {
         AllianceMemberCache.BeginFrame();
@@ -17,7 +19,17 @@ public static class FrontlineAutomation
         RotationModeAutomation.Update();
 
         if (Player.IsDead)
+        {
+            if (wasAlive)
+            {
+                MovementCommands.Stop();
+                wasAlive = false;
+            }
+
             return;
+        }
+
+        wasAlive = true;
 
         FrontlineDutyConfirmAutomation.Update();
         FrontlineLeaveAutomation.Update();
@@ -26,13 +38,20 @@ public static class FrontlineAutomation
             return;
 
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))
+        {
+            NaviMovementCoordinator.Reset();
             return;
+        }
 
         if (!RequiredPlugins.IsAutomationActive)
+        {
+            NaviMovementCoordinator.Reset();
             return;
+        }
 
         FollowTargetService.UpdateSelection();
         InitialMovementMode.Update();
+        NaviMovementCoordinator.Update();
         ClosestEnemyPlayerTargeting.Update();
         PvpLimitBreakAutomation.Update();
         TrackedPlayerSync.Update();
@@ -56,6 +75,6 @@ public static class FrontlineAutomation
         if (FrontlineEntryZone.ShouldSkipMoveTarget(moveTarget))
             return;
 
-        MovementCommands.MoveTo(moveTarget);
+        NaviMovementCoordinator.IssueMoveTo(moveTarget);
     }
 }
