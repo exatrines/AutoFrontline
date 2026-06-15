@@ -131,6 +131,14 @@ internal static class InitialMovementMode
             < FrontlineConstants.InitialMovementRecordRadiusMeters)
             return;
 
+        if (FrontlineSpawnExitDestinations.TryGetFixedExitDestination(
+                Svc.ClientState.TerritoryType,
+                out var fixedDestination))
+        {
+            firstExitPosition = fixedDestination;
+            return;
+        }
+
         firstExitPosition = playerPosition;
     }
 
