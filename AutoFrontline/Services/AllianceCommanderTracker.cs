@@ -105,6 +105,9 @@ public static class AllianceCommanderTracker
         LatestCommanderContentId = member.ContentId;
         LatestCommanderName = member.Name;
 
+        if (!C.CommanderFollowEnabled)
+            return;
+
         if (HostileModeFollow.TryCreateSnapshot(members, out _))
             return;
 

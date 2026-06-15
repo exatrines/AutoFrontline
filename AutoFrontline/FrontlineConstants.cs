@@ -40,8 +40,14 @@ internal static class FrontlineConstants
     /// <summary>マウントルーレットの GeneralAction ID（ゲームデータ取得失敗時のフォールバック）。</summary>
     public const uint MountRouletteGeneralActionId = 9;
 
-    /// <summary>フロントラインのアイスドトームリス（付近でマウント降下）。ModelChara / DataId。</summary>
+    /// <summary>フロントラインのアイスドトームリス（付近でマウント降下・攻撃対象）。ModelChara / DataId。</summary>
     public const uint IcedotomeIrisModelCharaId = 0x1E0;
+
+    /// <summary>フロントラインの遊撃ドローン（付近でマウント降下・攻撃対象）。ModelChara / DataId。</summary>
+    public const uint AssaultDroneModelCharaId = 0xC19;
+
+    /// <summary>フロントラインの遊撃システム（付近でマウント降下・攻撃対象）。ModelChara / DataId。</summary>
+    public const uint AssaultSystemModelCharaId = 0x233C;
 
     /// <summary>コンテンツファインダー参加確認ダイアログ操作の最小間隔（ms）。</summary>
     public const int ContentsFinderConfirmThrottleMs = 500;
@@ -97,11 +103,17 @@ internal static class FrontlineConstants
     /// <summary>moveto 停滞時のデジョン確認（SelectYesno）操作の最小間隔（ms）。</summary>
     public const int NaviStuckDejonConfirmThrottleMs = 500;
 
-    /// <summary>moveto 中にプレイヤー座標が変わらないとみなす時間（ms）。</summary>
-    public const int NaviStuckDejonStallMs = 10_000;
-
     /// <summary>moveto 停滞判定で「座標が変わった」とみなす距離（m）。</summary>
     public const float NaviStuckDejonPositionThresholdMeters = 1f;
+
+    /// <summary>デジョン停滞時間スライダーの下限（秒）。</summary>
+    public const float DejonStallSecondsMin = 10f;
+
+    /// <summary>デジョン停滞時間スライダーの上限（秒）。</summary>
+    public const float DejonStallSecondsMax = 30f;
+
+    /// <summary>デジョン停滞時間の既定値（秒）。</summary>
+    public const float DejonStallSecondsDefault = 15f;
 
     /// <summary>スタック判定を行う移動先までの最小距離（m）。これ未満は到着扱い。</summary>
     public const float NaviStuckDejonMinDestinationDistanceMeters = 5f;
