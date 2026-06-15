@@ -93,4 +93,19 @@ internal static class FrontlineConstants
 
     /// <summary>EzThrottler キー: 降下。</summary>
     public const string ThrottleDismount = "AflDismount";
+
+    /// <summary>moveto 停滞時のデジョン確認（SelectYesno）操作の最小間隔（ms）。</summary>
+    public const int NaviStuckDejonConfirmThrottleMs = 500;
+
+    /// <summary>moveto 中にプレイヤー座標が変わらないとみなす時間（ms）。</summary>
+    public const int NaviStuckDejonStallMs = 10_000;
+
+    /// <summary>moveto 停滞判定で「座標が変わった」とみなす距離（m）。</summary>
+    public const float NaviStuckDejonPositionThresholdMeters = 1f;
+
+    /// <summary>スタック判定を行う移動先までの最小距離（m）。これ未満は到着扱い。</summary>
+    public const float NaviStuckDejonMinDestinationDistanceMeters = 5f;
+
+    /// <summary>EzThrottler キー: デジョン確認ダイアログ。</summary>
+    public const string ThrottleNaviStuckDejonConfirm = "AflNaviStuckDejonConfirm";
 }

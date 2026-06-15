@@ -35,12 +35,14 @@ internal static class NaviMovementCoordinator
         }
 
         MovementCommands.MoveTo(target);
+        NaviStuckDejonAutomation.NotifyMoveIssued();
     }
 
     public static void Reset()
     {
         lastRoute = NaviMovementRoute.None;
         stopBeforeNextMove = false;
+        NaviStuckDejonAutomation.NotifyStopped();
     }
 
     private static NaviMovementRoute ResolveRoute()

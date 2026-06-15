@@ -23,6 +23,7 @@ public static class FrontlineAutomation
             if (wasAlive)
             {
                 MovementCommands.Stop();
+                NaviStuckDejonAutomation.Reset();
                 wasAlive = false;
             }
 
@@ -40,12 +41,14 @@ public static class FrontlineAutomation
         if (!FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType))
         {
             NaviMovementCoordinator.Reset();
+            NaviStuckDejonAutomation.Reset();
             return;
         }
 
         if (!RequiredPlugins.IsAutomationActive)
         {
             NaviMovementCoordinator.Reset();
+            NaviStuckDejonAutomation.Reset();
             return;
         }
 
@@ -56,6 +59,17 @@ public static class FrontlineAutomation
         PvpLimitBreakAutomation.Update();
         TrackedPlayerSync.Update();
 
+        var hasInitialMove = InitialMovementMode.TryGetMoveTarget(out var initialTarget);
+        var followMoveTarget = FollowTargetService.TryGetMoveTarget();
+        var hasNavigationIntent = hasInitialMove
+            || followMoveTarget != null
+            || FollowTargetService.LastMoveTarget != null
+            || InitialMovementMode.IsActive;
+        NaviStuckDejonAutomation.Update(hasNavigationIntent);
+
+        if (NaviStuckDejonAutomation.IsAwaitingConfirm)
+            return;
+
         if (TrackedPlayerSync.ShouldDeferMovement)
             return;
 
@@ -65,9 +79,9 @@ public static class FrontlineAutomation
         if (!PlayerMovementGate.CanIssueVnavMoveTo)
             return;
 
-        var target = InitialMovementMode.TryGetMoveTarget(out var initialTarget)
+        var target = hasInitialMove
             ? initialTarget
-            : FollowTargetService.TryGetMoveTarget();
+            : followMoveTarget;
 
         if (target is not Vector3 moveTarget)
             return;
