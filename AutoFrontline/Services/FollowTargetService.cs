@@ -49,19 +49,34 @@ public static class FollowTargetService
 
         var members = GetMembers();
 
-        if (TryCompleteCommanderFollow(members))
-            return;
-
-        if (selectionMode == FollowSelectionMode.FollowCommander && ShouldPreferCombatMode(members))
+        if (!C.CommanderFollowEnabled)
         {
-            AllianceCommanderTracker.DismissFollowRequest();
-            SelectFallbackTarget(members);
-            return;
+            if (selectionMode == FollowSelectionMode.FollowCommander || AllianceCommanderTracker.IsFollowPending)
+            {
+                AllianceCommanderTracker.DismissFollowRequest();
+                if (selectionMode == FollowSelectionMode.FollowCommander)
+                {
+                    SelectFallbackTarget(members);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            if (TryCompleteCommanderFollow(members))
+                return;
+
+            if (selectionMode == FollowSelectionMode.FollowCommander && ShouldPreferCombatMode(members))
+            {
+                AllianceCommanderTracker.DismissFollowRequest();
+                SelectFallbackTarget(members);
+                return;
+            }
         }
 
         if (AllianceCommanderTracker.NeedsReselect)
         {
-            if (AllianceCommanderTracker.IsFollowPending)
+            if (C.CommanderFollowEnabled && AllianceCommanderTracker.IsFollowPending)
                 SelectNewTarget(members);
             else
                 SelectFallbackTarget(members);
@@ -74,10 +89,10 @@ public static class FollowTargetService
 
         if (trackedContentId != 0 && !IsTrackedAlive(members))
         {
-            if (selectionMode == FollowSelectionMode.FollowCommander)
+            if (selectionMode == FollowSelectionMode.FollowCommander && C.CommanderFollowEnabled)
                 AllianceCommanderTracker.ClearDueToDeath();
 
-            if (selectionMode == FollowSelectionMode.FollowCommander)
+            if (selectionMode == FollowSelectionMode.FollowCommander && C.CommanderFollowEnabled)
                 SelectFallbackTarget(members);
             else
                 SelectNewTarget(members);
@@ -161,7 +176,7 @@ public static class FollowTargetService
 
     private static bool TryCompleteCommanderFollow(IReadOnlyList<AllianceMemberSnapshot> members)
     {
-        if (selectionMode != FollowSelectionMode.FollowCommander)
+        if (!C.CommanderFollowEnabled || selectionMode != FollowSelectionMode.FollowCommander)
             return false;
 
         var tracked = FindTracked(members);
@@ -183,7 +198,7 @@ public static class FollowTargetService
         var tracked = FindTracked(members);
         if (tracked == null || tracked.Value.IsDead)
         {
-            if (selectionMode == FollowSelectionMode.FollowCommander)
+            if (selectionMode == FollowSelectionMode.FollowCommander && C.CommanderFollowEnabled)
             {
                 AllianceCommanderTracker.ClearDueToDeath();
                 SelectFallbackTarget(members);
@@ -237,7 +252,7 @@ public static class FollowTargetService
             return;
         }
 
-        if (AllianceCommanderTracker.TryGetCommander(members, out var commander))
+        if (C.CommanderFollowEnabled && AllianceCommanderTracker.TryGetCommander(members, out var commander))
         {
             if (IsWithinCommanderFollowArrival(commander))
             {

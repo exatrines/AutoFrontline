@@ -12,6 +12,12 @@ public static class ExperimentalTab
         ImGui.TextWrapped("Experimental features may change or be removed without notice.");
         ImGui.Spacing();
 
+        CommanderFollowSettings.Draw();
+        ImGui.Spacing();
+
+        DejonStuckSettings.Draw();
+        ImGui.Spacing();
+
         PvpLimitBreakSettings.Draw();
     }
 }

@@ -23,8 +23,13 @@ internal static class NaviStuckDejonAutomation
     public static float StallElapsedSeconds =>
         hasAnchorPosition ? (Environment.TickCount64 - anchorPositionTick) / 1000f : 0f;
 
-    public static float StallThresholdSeconds =>
-        FrontlineConstants.NaviStuckDejonStallMs / 1000f;
+    public static float StallThresholdSeconds => C.DejonStallSeconds;
+
+    private static long StallThresholdMs =>
+        (long)(Math.Clamp(
+            C.DejonStallSeconds,
+            FrontlineConstants.DejonStallSecondsMin,
+            FrontlineConstants.DejonStallSecondsMax) * 1000f);
 
     public static Vector3? StallPreviousPlayerPosition =>
         hasAnchorPosition ? anchorPosition : null;
@@ -179,7 +184,7 @@ internal static class NaviStuckDejonAutomation
 
         IsMonitoringStall = true;
 
-        if (Environment.TickCount64 - anchorPositionTick < FrontlineConstants.NaviStuckDejonStallMs)
+        if (Environment.TickCount64 - anchorPositionTick < StallThresholdMs)
             return;
 
         TriggerRecovery();

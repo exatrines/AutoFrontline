@@ -63,7 +63,7 @@ public static unsafe class DebugTab
         table.Row("Mounting", Player.Mounting ? "Yes" : "No");
         table.Row("Mount choice", MountCatalog.GetDisplayName(C.MountSelectionId));
         table.Row($"Nearby enemies ({C.DismountEnemyDistanceMeters}m)", $"{TrackedPlayerSync.LastNearbyEnemyCount}");
-        table.Row($"Icedotome Iris nearby ({C.DismountEnemyDistanceMeters}m)",
+        table.Row($"Special combat nearby ({C.DismountEnemyDistanceMeters}m)",
             TrackedPlayerSync.LastIcedotomeIrisNearby ? "Yes" : "No");
         table.End();
     }
@@ -92,11 +92,11 @@ public static unsafe class DebugTab
 
         var enemy = ClosestEnemyPlayerTargeting.LastClosestEnemy;
         table.Row("Combat target",
-            ClosestEnemyPlayerTargeting.LastTargetIsIcedotomeIris
-                ? "Icedotome Iris"
+            ClosestEnemyPlayerTargeting.LastTargetIsSpecialCombatObject
+                ? ClosestEnemyPlayerTargeting.LastSpecialCombatTargetName
                 : enemy?.Name.ToString() ?? "—");
         table.Row("PvP LB", GetPvpLimitBreakDebugText());
-        if (ClosestEnemyPlayerTargeting.LastTargetIsIcedotomeIris || enemy != null)
+        if (ClosestEnemyPlayerTargeting.LastTargetIsSpecialCombatObject || enemy != null)
             table.Row("Combat distance", $"{ClosestEnemyPlayerTargeting.LastClosestEnemyDistance:F1} m");
 
         if (!string.IsNullOrEmpty(FollowTargetService.LastDensestMemberName))

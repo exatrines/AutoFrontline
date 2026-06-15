@@ -4,12 +4,13 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>敵プレイヤーとアイスドトームリスのうち最も近い対象をターゲットする。</summary>
+/// <summary>敵プレイヤーと特殊戦闘オブジェクト（リス・ドローン等）のうち最も近い対象をターゲットする。</summary>
 internal static class ClosestEnemyPlayerTargeting
 {
     public static IPlayerCharacter LastClosestEnemy { get; private set; }
     public static float LastClosestEnemyDistance { get; private set; }
-    public static bool LastTargetIsIcedotomeIris { get; private set; }
+    public static string LastSpecialCombatTargetName { get; private set; } = string.Empty;
+    public static bool LastTargetIsSpecialCombatObject => LastSpecialCombatTargetName.Length > 0;
 
     public static void Update()
     {
@@ -41,15 +42,18 @@ internal static class ClosestEnemyPlayerTargeting
             return;
         }
 
-        if (!TrySelectClosestCombatTarget(out var target, out var distance, out var isIris))
+        if (!TrySelectClosestCombatTarget(
+                out var target,
+                out var distance,
+                out var specialCombatTargetName))
         {
             ClearDebugState();
             return;
         }
 
-        LastClosestEnemy = isIris ? null : target as IPlayerCharacter;
+        LastClosestEnemy = specialCombatTargetName.Length > 0 ? null : target as IPlayerCharacter;
         LastClosestEnemyDistance = distance;
-        LastTargetIsIcedotomeIris = isIris;
+        LastSpecialCombatTargetName = specialCombatTargetName;
 
         if (Svc.Targets.Target?.GameObjectId == target.GameObjectId)
             return;
@@ -60,11 +64,11 @@ internal static class ClosestEnemyPlayerTargeting
     private static bool TrySelectClosestCombatTarget(
         out IGameObject target,
         out float distanceMeters,
-        out bool isIcedotomeIris)
+        out string specialCombatTargetName)
     {
         target = null!;
         distanceMeters = float.MaxValue;
-        isIcedotomeIris = false;
+        specialCombatTargetName = string.Empty;
 
         var allies = AllianceMemberCache.GetMembers();
 
@@ -75,13 +79,17 @@ internal static class ClosestEnemyPlayerTargeting
             distanceMeters = enemyDistance;
         }
 
-        if (IcedotomeIrisDetector.TryGetClosest(float.MaxValue, out var iris, out var irisDistance)
-            && !FrontlineEntryZone.ShouldSkipEnemyTargeting(iris.Position)
-            && irisDistance < distanceMeters)
+        if (FrontlineSpecialCombatTargetDetector.TryGetClosest(
+                float.MaxValue,
+                out var specialTarget,
+                out var specialDistance,
+                out var specialName)
+            && !FrontlineEntryZone.ShouldSkipEnemyTargeting(specialTarget.Position)
+            && specialDistance < distanceMeters)
         {
-            target = iris;
-            distanceMeters = irisDistance;
-            isIcedotomeIris = true;
+            target = specialTarget;
+            distanceMeters = specialDistance;
+            specialCombatTargetName = specialName;
         }
 
         return target != null;
@@ -91,6 +99,6 @@ internal static class ClosestEnemyPlayerTargeting
     {
         LastClosestEnemy = null;
         LastClosestEnemyDistance = 0;
-        LastTargetIsIcedotomeIris = false;
+        LastSpecialCombatTargetName = string.Empty;
     }
 }

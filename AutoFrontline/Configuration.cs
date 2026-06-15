@@ -42,14 +42,35 @@ public sealed class Configuration
     /// <summary>ジョブ別 Auto Limit Break（キー: PvpLimitBreakCatalog の Entry Id）。</summary>
     public Dictionary<string, bool> AutoLimitBreakByEntryId = new();
 
+    /// <summary>Experimental: アライアンスチャット発言者を軍師として追従する。</summary>
+    public bool CommanderFollowEnabled;
+
+    /// <summary>Experimental: 集団行動スタック時のデジョン発動までの停滞時間（秒）。</summary>
+    public float DejonStallSeconds = FrontlineConstants.DejonStallSecondsDefault;
+
     public void MigrateIfNeeded()
     {
         if (ConfigVersion >= CurrentConfigVersion)
+        {
+            ClampDejonStallSeconds();
             return;
+        }
 
         Mode = Enabled ? PluginMode.Manual : PluginMode.Disable;
         ConfigVersion = CurrentConfigVersion;
+        ClampDejonStallSeconds();
         EzConfig.Save();
+    }
+
+    private void ClampDejonStallSeconds()
+    {
+        if (DejonStallSeconds < FrontlineConstants.DejonStallSecondsMin)
+            DejonStallSeconds = FrontlineConstants.DejonStallSecondsDefault;
+
+        DejonStallSeconds = Math.Clamp(
+            DejonStallSeconds,
+            FrontlineConstants.DejonStallSecondsMin,
+            FrontlineConstants.DejonStallSecondsMax);
     }
 
     // Legacy config keys

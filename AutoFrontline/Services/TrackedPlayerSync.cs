@@ -46,7 +46,7 @@ public static unsafe class TrackedPlayerSync
         var allies = AllianceMemberCache.GetMembers();
         var hasNearbyEnemy = NearbyEnemyDetector.HasNearbyEnemy(allies, out var enemyCount);
         LastNearbyEnemyCount = enemyCount;
-        LastIcedotomeIrisNearby = IcedotomeIrisDetector.HasNearby(C.DismountEnemyDistanceMeters);
+        LastIcedotomeIrisNearby = FrontlineSpecialCombatTargetDetector.HasNearby(C.DismountEnemyDistanceMeters);
 
         if (Player.Mounted && (hasNearbyEnemy || LastIcedotomeIrisNearby))
         {
