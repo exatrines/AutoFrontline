@@ -18,6 +18,7 @@ public static unsafe class DebugTab
         DrawSelfSection();
         DrawTargetSection();
         DrawMovementSection();
+        DrawStuckRecoverySection();
         DrawRotationSection();
         DrawStatusSection();
     }
@@ -199,6 +200,81 @@ public static unsafe class DebugTab
 
         ImGui.TextDisabled("Recaptures spawn center here and clears first exit. Use at the real spawn after a hot reload.");
     }
+
+    private static void DrawStuckRecoverySection()
+    {
+        AflImGui.SectionHeader("Stuck recovery (Dejon)");
+
+        var table = new DebugTable("##AflDbgStuck");
+        if (!table.Begin())
+            return;
+
+        var phase = NaviStuckDejonAutomation.StallPhaseLabel;
+        table.Row("Phase", phase, GetStuckPhaseColor(phase));
+
+        table.Row(
+            "Group movement",
+            NaviStuckDejonAutomation.IsGroupMovementEligible ? "yes" : "no",
+            NaviStuckDejonAutomation.IsGroupMovementEligible ? ImGuiColors.HealerGreen : null);
+
+        var blockReason = NaviStuckDejonAutomation.StallMonitorBlockReason;
+        table.Row(
+            "Timer armed",
+            string.IsNullOrEmpty(blockReason) ? "yes" : $"no ({blockReason})",
+            string.IsNullOrEmpty(blockReason) ? ImGuiColors.HealerGreen : ImGuiColors.DalamudOrange);
+
+        table.Row("Moveto tracked", NaviStuckDejonAutomation.IsMovetoTracked ? "yes" : "no");
+
+        var destDist = NaviStuckDejonAutomation.StallDestinationDistanceMeters;
+        table.Row(
+            $"Dest. distance ({FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters}m+)",
+            destDist is float distance ? $"{distance:F1} m" : "—",
+            destDist is float d
+                && d < FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters
+                ? ImGuiColors.DalamudOrange
+                : null);
+
+        table.Row(
+            "Current pos.",
+            NaviStuckDejonAutomation.StallCurrentPlayerPosition is Vector3 current
+                ? GameCoords.FormatDisplay(current)
+                : "—");
+
+        table.Row(
+            "Anchor pos.",
+            NaviStuckDejonAutomation.StallPreviousPlayerPosition is Vector3 anchor
+                ? GameCoords.FormatDisplay(anchor)
+                : "—");
+
+        var posDelta = NaviStuckDejonAutomation.StallPositionDeltaMeters;
+        table.Row(
+            $"Pos. delta ({FrontlineConstants.NaviStuckDejonPositionThresholdMeters}m)",
+            posDelta is float delta ? $"{delta:F2} m" : "—",
+            posDelta is float stallDelta
+                && stallDelta <= FrontlineConstants.NaviStuckDejonPositionThresholdMeters
+                ? ImGuiColors.DalamudOrange
+                : null);
+
+        table.Row(
+            "Timer",
+            NaviStuckDejonAutomation.IsStallTimerActive
+                ? $"{NaviStuckDejonAutomation.StallElapsedSeconds:F1} / {NaviStuckDejonAutomation.StallThresholdSeconds:F0} s"
+                : $"0.0 / {NaviStuckDejonAutomation.StallThresholdSeconds:F0} s",
+            NaviStuckDejonAutomation.IsMonitoringStall ? ImGuiColors.DalamudOrange : null);
+
+        table.End();
+    }
+
+    private static Vector4? GetStuckPhaseColor(string phase) => phase switch
+    {
+        "monitoring" => ImGuiColors.DalamudOrange,
+        "triggering" => ImGuiColors.DalamudRed,
+        "awaiting dejon confirm" => ImGuiColors.ParsedGold,
+        "near destination" => ImGuiColors.DalamudOrange,
+        "not group movement" => ImGuiColors.DalamudGrey,
+        "idle" => ImGuiColors.DalamudGrey,
+        _ => null,
+    };
 
     private static void DrawRotationSection()
     {
