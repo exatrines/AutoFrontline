@@ -12,6 +12,7 @@ internal static class FollowSelectionModeExtensions
 {
     public static string ToDebugLabel(this FollowSelectionMode mode) => mode switch
     {
+        FollowSelectionMode.GroupMovement when C.ExperimentalGroupMoveEnabled => "ExpGroup",
         FollowSelectionMode.GroupMovement => "Densest",
         FollowSelectionMode.Hostile => "EnemyProximate",
         FollowSelectionMode.FollowCommander => "Commander",

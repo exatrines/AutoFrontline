@@ -210,8 +210,6 @@ internal static class NaviStuckDejonAutomation
     private static void TriggerRecovery()
     {
         MovementCommands.Stop();
-        movetoActive = false;
-        ClearAnchor();
         awaitingDejonConfirm = true;
         Chat.ExecuteCommand($"/pvpaction {DejonActionName}");
     }

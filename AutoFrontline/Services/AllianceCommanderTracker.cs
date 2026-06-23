@@ -108,7 +108,7 @@ public static class AllianceCommanderTracker
         if (!C.CommanderFollowEnabled)
             return;
 
-        if (HostileModeFollow.TryCreateSnapshot(members, out _))
+        if (HostileModeFollow.IsEligible(members))
             return;
 
         IsFollowPending = true;

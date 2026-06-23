@@ -15,6 +15,9 @@ public static class ExperimentalTab
         CommanderFollowSettings.Draw();
         ImGui.Spacing();
 
+        ExperimentalGroupMoveSettings.Draw();
+        ImGui.Spacing();
+
         DejonStuckSettings.Draw();
         ImGui.Spacing();
 

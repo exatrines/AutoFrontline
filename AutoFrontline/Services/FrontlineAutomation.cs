@@ -54,7 +54,6 @@ public static class FrontlineAutomation
 
         FollowTargetService.UpdateSelection();
         InitialMovementMode.Update();
-        NaviMovementCoordinator.Update();
         ClosestEnemyPlayerTargeting.Update();
         PvpLimitBreakAutomation.Update();
         TrackedPlayerSync.Update();

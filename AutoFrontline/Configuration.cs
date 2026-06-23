@@ -45,6 +45,9 @@ public sealed class Configuration
     /// <summary>Experimental: アライアンスチャット発言者を軍師として追従する。</summary>
     public bool CommanderFollowEnabled;
 
+    /// <summary>Experimental: 自分 50m 内の密集中心、不在時は最寄り味方へ集団移動する。</summary>
+    public bool ExperimentalGroupMoveEnabled;
+
     /// <summary>Experimental: 集団行動スタック時のデジョン発動までの停滞時間（秒）。</summary>
     public float DejonStallSeconds = FrontlineConstants.DejonStallSecondsDefault;
 

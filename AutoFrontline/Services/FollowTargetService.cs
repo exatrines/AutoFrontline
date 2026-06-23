@@ -49,6 +49,12 @@ public static class FollowTargetService
 
         var members = GetMembers();
 
+        if (C.ExperimentalGroupMoveEnabled && selectionMode == FollowSelectionMode.Hostile)
+        {
+            SelectFallbackTarget(members);
+            return;
+        }
+
         if (!C.CommanderFollowEnabled)
         {
             if (selectionMode == FollowSelectionMode.FollowCommander || AllianceCommanderTracker.IsFollowPending)
@@ -154,7 +160,12 @@ public static class FollowTargetService
                 anchor,
                 FrontlineConstants.PositionUnchangedThresholdMeters))
         {
-            if (Environment.TickCount64 - lastNaviRebuildTick < MoveRefreshIntervalMs)
+            var suppressUnchanged = Player.Object == null
+                || Vector3.Distance(Player.Object.Position, anchor)
+                    < FrontlineConstants.PositionUnchangedBypassDistanceMeters;
+
+            if (suppressUnchanged
+                && Environment.TickCount64 - lastNaviRebuildTick < MoveRefreshIntervalMs)
             {
                 TrackedPositionUnchanged = true;
                 return null;
@@ -218,7 +229,7 @@ public static class FollowTargetService
         }
 
         if (selectionMode == FollowSelectionMode.Hostile
-            && HostileModeFollow.TryCreateSnapshot(members, out var hostileSnapshot))
+            && HostileModeFollow.TryCreateEligibleSnapshot(members, out var hostileSnapshot))
         {
             anchor = HostileModeFollow.GetNavPosition(hostileSnapshot);
             return true;
@@ -277,7 +288,7 @@ public static class FollowTargetService
             return;
         }
 
-        if (HostileModeFollow.TryCreateSnapshot(members, out var hostileSnapshot))
+        if (HostileModeFollow.TryCreateEligibleSnapshot(members, out var hostileSnapshot))
         {
             var ally = HostileModeFollow.GetTrackTarget(hostileSnapshot);
             LastProximityEnemyName = hostileSnapshot.EnemyName;
@@ -288,19 +299,34 @@ public static class FollowTargetService
         LastProximityEnemyName = string.Empty;
 
         var previousId = trackedContentId;
-        var densest = DensestMemberSelector.Find(members, excludeSelf: true, excludeContentId: previousId)
-                      ?? (previousId != 0 ? DensestMemberSelector.Find(members, excludeSelf: true) : null);
+        var pick = SelectGroupMovementTarget(members, previousId);
 
-        if (densest == null)
+        if (pick == null)
         {
             ClearTarget();
             return;
         }
 
         ApplyTarget(
-            densest.Value.Member,
+            pick.Value.Member,
             FollowSelectionMode.GroupMovement,
-            densestNeighborCount: densest.Value.NeighborCount);
+            densestNeighborCount: pick.Value.NeighborCount);
+    }
+
+    private static (AllianceMemberSnapshot Member, int NeighborCount)? SelectGroupMovementTarget(
+        IReadOnlyList<AllianceMemberSnapshot> members,
+        ulong previousId)
+    {
+        if (C.ExperimentalGroupMoveEnabled)
+        {
+            return ExperimentalGroupMoveSelector.Find(members, excludeSelf: true, excludeContentId: previousId)
+                   ?? (previousId != 0
+                       ? ExperimentalGroupMoveSelector.Find(members, excludeSelf: true)
+                       : null);
+        }
+
+        return DensestMemberSelector.Find(members, excludeSelf: true, excludeContentId: previousId)
+               ?? (previousId != 0 ? DensestMemberSelector.Find(members, excludeSelf: true) : null);
     }
 
     private static void ApplyTarget(
@@ -350,7 +376,7 @@ public static class FollowTargetService
     }
 
     private static bool ShouldPreferCombatMode(IReadOnlyList<AllianceMemberSnapshot> members) =>
-        HostileModeFollow.TryCreateSnapshot(members, out _);
+        HostileModeFollow.IsEligible(members);
 
     private static bool IsWithinCommanderFollowArrival(AllianceMemberSnapshot commander)
     {
