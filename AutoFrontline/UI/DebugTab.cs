@@ -348,7 +348,8 @@ public static unsafe class DebugTab
             ImGui.TextDisabled($"CF queue: {ContentsFinderQueueAutomation.LastStatus}");
         }
 
-        DrawStatusBullet("Movement", TrackedPlayerSync.ShouldDeferMovement, "Waiting to mount before move");
+        DrawStatusBullet("Movement", TrackedPlayerSync.ShouldDeferMovement,
+            C.ExperimentalGroupMoveEnabled ? "Waiting to mount (no enemy nearby)" : "Waiting to mount before move");
         DrawStatusBullet("Vnav blocked", !PlayerMovementGate.CanIssueVnavMoveTo, "Casting or mounting");
         DrawStatusBullet(
             "Auto leave",

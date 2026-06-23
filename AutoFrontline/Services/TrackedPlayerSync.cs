@@ -7,7 +7,7 @@ using Lumina.Excel.Sheets;
 
 namespace AutoFrontline.Services;
 
-/// <summary>移動先が遠いときマウントを試行。近傍の敵またはアイスドトームリスがいるとき降下。</summary>
+/// <summary>マウントの乗り降り。Experimental Group Move 時は敵がいないときのみ乗車、それ以外は移動先距離で乗車・敵付近で降車。</summary>
 public static unsafe class TrackedPlayerSync
 {
     public static float LastDistanceToTracked { get; private set; }
@@ -17,7 +17,9 @@ public static unsafe class TrackedPlayerSync
     public static bool LastIcedotomeIrisNearby { get; private set; }
 
     public static bool ShouldDeferMovement =>
-        ShouldTryMountForMoveDistance() && !Player.Mounted && !Player.Mounting;
+        C.ExperimentalGroupMoveEnabled
+            ? !HasNearbyEnemy() && !Player.Mounted && !Player.Mounting
+            : ShouldTryMountForMoveDistance() && !Player.Mounted && !Player.Mounting;
 
     private static bool InCombat => Svc.Condition[ConditionFlag.InCombat];
 
@@ -35,6 +37,12 @@ public static unsafe class TrackedPlayerSync
             LastDistanceToMoveDestination = moveDistance;
     }
 
+    private static bool HasNearbyEnemy()
+    {
+        var allies = AllianceMemberCache.GetMembers();
+        return NearbyEnemyDetector.HasNearbyEnemy(allies, out _);
+    }
+
     private static bool ShouldTryMountForMoveDistance() =>
         InitialMovementMode.TryGetMoveDestinationDistance(out var initialDistance)
             ? initialDistance >= C.MountDistanceMeters
@@ -48,10 +56,33 @@ public static unsafe class TrackedPlayerSync
         LastNearbyEnemyCount = enemyCount;
         LastIcedotomeIrisNearby = FrontlineSpecialCombatTargetDetector.HasNearby(C.DismountEnemyDistanceMeters);
 
+        if (C.ExperimentalGroupMoveEnabled)
+            SyncMountExperimental(hasNearbyEnemy);
+        else
+            SyncMountDefault(hasNearbyEnemy);
+    }
+
+    private static void SyncMountExperimental(bool hasNearbyEnemy)
+    {
+        if (hasNearbyEnemy)
+        {
+            if (Player.Mounted
+                && EzThrottler.Throttle(FrontlineConstants.ThrottleDismount, FrontlineConstants.DismountThrottleMs))
+                Chat.ExecuteCommand("/mount");
+
+            return;
+        }
+
+        TryMount();
+    }
+
+    private static void SyncMountDefault(bool hasNearbyEnemy)
+    {
         if (Player.Mounted && (hasNearbyEnemy || LastIcedotomeIrisNearby))
         {
             if (EzThrottler.Throttle(FrontlineConstants.ThrottleDismount, FrontlineConstants.DismountThrottleMs))
                 Chat.ExecuteCommand("/mount");
+
             return;
         }
 

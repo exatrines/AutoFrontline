@@ -13,6 +13,22 @@ internal readonly record struct HostileFollowSnapshot(
 /// <summary>敵対モード: 最寄り敵・味方列・ナビ位置の算出。</summary>
 internal static class HostileModeFollow
 {
+    public static bool IsEligible(IReadOnlyList<AllianceMemberSnapshot> members) =>
+        TryCreateEligibleSnapshot(members, out _);
+
+    public static bool TryCreateEligibleSnapshot(
+        IReadOnlyList<AllianceMemberSnapshot> members,
+        out HostileFollowSnapshot snapshot)
+    {
+        if (C.ExperimentalGroupMoveEnabled)
+        {
+            snapshot = default;
+            return false;
+        }
+
+        return TryCreateSnapshot(members, out snapshot);
+    }
+
     public static bool TryCreateSnapshot(
         IReadOnlyList<AllianceMemberSnapshot> members,
         out HostileFollowSnapshot snapshot)

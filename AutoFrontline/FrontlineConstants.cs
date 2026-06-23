@@ -6,6 +6,12 @@ internal static class FrontlineConstants
     /// <summary>集団移動モードで「最も密集している味方」を数える半径（m）。</summary>
     public const float DensityRadiusMeters = 50f;
 
+    /// <summary>Experimental Group Move: 自分からこの半径（m）以内の味方を候補とする。</summary>
+    public const float ExperimentalGroupMoveSelfSearchRadiusMeters = 50f;
+
+    /// <summary>Experimental Group Move: 2 名以上候補時の密集度カウント半径（m）。</summary>
+    public const float ExperimentalGroupMoveDensityRadiusMeters = 30f;
+
     /// <summary>敵対モードで最寄り敵・付近味方を探索する半径（m）。</summary>
     public const float EnemyProximityFollowRadiusMeters = 30f;
 
@@ -17,6 +23,9 @@ internal static class FrontlineConstants
 
     /// <summary>追従対象の座標が変わっていないとみなす距離（m）。この範囲内なら moveto 再発行を抑制。</summary>
     public const float PositionUnchangedThresholdMeters = 0.1f;
+
+    /// <summary>自分と追従対象がこの距離（m）以上離れているときは unchanged 抑制を行わない。</summary>
+    public const float PositionUnchangedBypassDistanceMeters = 20f;
 
     /// <summary>軍師追従モードで「到着済み」とみなし追従を止める距離（m）。</summary>
     public const float CommanderFollowArrivalDistanceMeters = 15f;
