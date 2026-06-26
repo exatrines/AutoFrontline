@@ -1,6 +1,21 @@
 # Changelog
 
-## Unreleased
+## v1.4.0.0 - 2026-06-27
+
+- コードベースをドメイン別フォルダに再構成（`Core` / `Services/*` / `UI/Tabs` 等）
+- Follow 系を `FollowModeSelector` / `FollowMoveResolver` / `GroupMoveSelector` に分割
+- 旧集団行動（Densest）を削除し、密集ロジックを常時有効化（ConfigVersion 3 移行）
+- 戦闘モード・軍師追従を Experimental タブのトグルに統合（`HostileModeEnabled` 追加）
+- 集団行動: **Group search radius** を Settings で設定可能（25〜100m、既定 75m）
+- 追従対象の除外: 静止 **5 回連続**、または同一対象 **連続 N 回** 選定（N は 1〜20、既定 10）で除外リストへ追加。除外時間は 0〜20 秒（既定 10 秒、0 = 無効）
+- unchanged 判定は再選定・静止除外のみに使用（moveto 抑制は廃止）
+- 初回脱出: 固定座標フィールドのみスポーン再入場時 moveto。未設定フィールドは集団行動。Return はスポーン圏を一度出た後に有効
+- Return（旧 Dejon）設定を Settings → Movement へ移動。英語表記を Return に統一
+- 特殊戦闘オブジェクト: アイスドトームリスは砕氷戦のみ、遊撃ドローンは制圧戦のみ
+- 死亡時 `/vnav stop` はフロントラインかつ自動化 ON のときのみ
+- `PlayerMovementGate` は詠唱中のみ moveto を抑制
+- Debug: AutoFrontline / vnavmesh サブタブ、除外追従対象リスト（名前・理由・残り時間）、Spawn / Mount / Return 情報
+- マウント: 敵・特殊オブジェクト範囲外なら常に乗車。Mount distance 設定を削除
 
 ## v1.3.1.1 - 2026-06-22
 

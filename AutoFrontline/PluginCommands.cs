@@ -48,7 +48,6 @@ internal static class PluginCommands
         if (C.Mode == PluginMode.Loop && AutoRunSession.Active)
         {
             AutoRunSession.Stop();
-            ContentsFinderQueueAutomation.ResetState();
             DuoLog.Information("Auto Frontline loop stopped.");
             return;
         }
@@ -76,10 +75,7 @@ internal static class PluginCommands
         }
 
         if (mode != PluginMode.Loop)
-        {
             AutoRunSession.Stop();
-            ContentsFinderQueueAutomation.ResetState();
-        }
 
         if (C.Mode == mode && !AutoRunSession.Active)
         {
