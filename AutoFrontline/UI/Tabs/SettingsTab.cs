@@ -8,7 +8,7 @@ public static class SettingsTab
 
     public static void Draw()
     {
-        AflImGui.DrawSettingsWhenReady(DrawSettings);
+        AflImGui.DrawSettings(DrawSettings);
     }
 
     private static void DrawSettings()
@@ -50,11 +50,12 @@ public static class SettingsTab
 
     private static void DrawModeRow()
     {
-        var modeIndex = (int)C.Mode;
+        var pluginsReady = RequiredPlugins.AreAllLoaded;
+        var modeIndex = pluginsReady ? (int)C.Mode : (int)PluginMode.Disable;
         if (modeIndex < 0 || modeIndex >= ModeLabels.Length)
             modeIndex = 0;
 
-        if (AutoRunSession.Active)
+        if (AutoRunSession.Active || !pluginsReady)
             ImGui.BeginDisabled();
 
         ImGui.SetNextItemWidth(120f);
@@ -64,17 +65,18 @@ public static class SettingsTab
             if (C.Mode != newMode)
             {
                 if (newMode != PluginMode.Loop)
-                {
                     AutoRunSession.Stop();
-                }
 
                 C.Mode = newMode;
                 EzConfig.Save();
             }
         }
 
-        if (AutoRunSession.Active)
+        if (AutoRunSession.Active || !pluginsReady)
             ImGui.EndDisabled();
+
+        if (!pluginsReady)
+            ImGui.TextDisabled(RequiredPlugins.GetMissingPluginsMessage());
 
         if (C.Mode == PluginMode.Loop)
         {
