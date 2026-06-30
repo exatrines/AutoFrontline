@@ -30,20 +30,10 @@ internal static class AflImGui
         ImGui.SliderFloat(label, ref seconds, min, max, "%.1f");
     }
 
-    /// <summary>必須プラグイン未充足時に設定項目を無効化して描画する。</summary>
-    public static void DrawSettingsWhenReady(Action drawSettings)
+    /// <summary>必須プラグイン状態を同期してから設定を描画する。</summary>
+    public static void DrawSettings(Action drawSettings)
     {
         RequiredPlugins.SyncEnabledState();
-
-        if (RequiredPlugins.AreAllLoaded)
-        {
-            drawSettings();
-            return;
-        }
-
-        ImGui.BeginDisabled();
         drawSettings();
-        ImGui.EndDisabled();
-        ImGui.TextDisabled(RequiredPlugins.GetMissingPluginsMessage());
     }
 }

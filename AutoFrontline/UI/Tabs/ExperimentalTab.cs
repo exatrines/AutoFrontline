@@ -4,7 +4,7 @@ public static class ExperimentalTab
 {
     public static void Draw()
     {
-        AflImGui.DrawSettingsWhenReady(DrawContent);
+        AflImGui.DrawSettings(DrawContent);
     }
 
     private static void DrawContent()
