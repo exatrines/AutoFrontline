@@ -4,35 +4,42 @@ namespace AutoFrontline.UI;
 
 internal static class HostileModeSettings
 {
-    public static void Draw()
+    public static void Draw(float controlWidth)
     {
-        AflImGui.SectionHeader("Combat mode");
-        ImGui.TextWrapped(
-            "When enabled, move toward allies near the closest enemy within 30m. "
-            + "Takes priority over commander follow and group movement.");
-        ImGui.Spacing();
+        MirageUi.SubHeader("Combat mode");
 
-        if (ImGui.Checkbox("Enable combat mode##ExpHostileMode", ref C.HostileModeEnabled))
-            EzConfig.Save();
+        using (var group = MirageUi.CheckboxGroup("Enable combat mode##ExpHostileMode", ref C.HostileModeEnabled))
+        {
+            if (group.Changed)
+                EzConfig.Save();
 
-        if (!C.HostileModeEnabled)
-            ImGui.BeginDisabled();
+            using (MirageUi.DisabledIf(!C.HostileModeEnabled))
+            {
+                MirageUi.Text(
+                    "When enabled, move toward allies near the closest enemy within 30m. "
+                    + "Takes priority over commander follow and group movement.",
+                    color: MirageUi.Color.Secondary,
+                    wrap: true);
 
-        AflImGui.SliderSeconds("Combat mode refresh (sec)", ref C.HostileModeRefreshIntervalSeconds, 0.5f, 3.0f);
-        DrawRatioSlider(
-            "Combat mode position",
-            ref C.HostileModePositionRatio,
-            "0 = front ally, 1 = rearmost ally");
+                MirageUi.SliderFloat(
+                    "Combat mode refresh (sec)",
+                    ref C.HostileModeRefreshIntervalSeconds,
+                    0.5f,
+                    3.0f,
+                    controlWidth);
+                if (ImGui.IsItemDeactivatedAfterEdit())
+                    EzConfig.Save();
 
-        if (!C.HostileModeEnabled)
-            ImGui.EndDisabled();
-    }
-
-    private static void DrawRatioSlider(string label, ref float ratio, string hint)
-    {
-        ratio = Math.Clamp(ratio, 0f, 1f);
-        ImGui.SetNextItemWidth(AflImGui.DefaultSliderWidth);
-        ImGui.SliderFloat(label, ref ratio, 0f, 1f, "%.2f");
-        ImGui.TextDisabled(hint);
+                MirageUi.SliderFloat(
+                    "Combat mode position",
+                    ref C.HostileModePositionRatio,
+                    0f,
+                    1f,
+                    controlWidth,
+                    format: "%.2f");
+                if (ImGui.IsItemDeactivatedAfterEdit())
+                    EzConfig.Save();
+            }
+        }
     }
 }

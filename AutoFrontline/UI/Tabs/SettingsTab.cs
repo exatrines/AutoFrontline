@@ -4,48 +4,79 @@ namespace AutoFrontline.UI;
 
 public static class SettingsTab
 {
+    private const float ControlWidth = 200f;
     private static readonly string[] ModeLabels = ["Disable", "Manual", "Loop"];
 
     public static void Draw()
     {
-        AflImGui.DrawSettings(DrawSettings);
-    }
-
-    private static void DrawSettings()
-    {
+        MirageUi.SubHeader("Mode");
         DrawModeRow();
 
-        AflImGui.SectionHeader("General");
-        MountPicker.Draw();
-        DrawDistanceSlider("Dismount distance for enemy (m)", ref C.DismountEnemyDistanceMeters);
-
-        AflImGui.SectionHeader("Movement");
-        AflImGui.SliderSeconds("Move refresh (sec)", ref C.GroupMovementRefreshIntervalSeconds, 0.5f, 3.0f);
-        DrawDistanceSlider(
+        MirageUi.SubHeader("Movement");
+        MountPicker.Draw(ControlWidth);
+        MirageUi.SliderInt(
+            "Dismount distance for enemy (m)",
+            ref C.DismountEnemyDistanceMeters,
+            0,
+            100,
+            ControlWidth);
+        MirageUi.SliderFloat(
+            "Move refresh (sec)",
+            ref C.GroupMovementRefreshIntervalSeconds,
+            0.5f,
+            3.0f,
+            ControlWidth);
+        MirageUi.SliderInt(
             "Group search radius (m)",
             ref C.GroupMoveSelfSearchRadiusMeters,
             FrontlineConstants.GroupMoveSelfSearchRadiusMinMeters,
-            FrontlineConstants.GroupMoveSelfSearchRadiusMaxMeters);
-        DrawDistanceSlider(
+            FrontlineConstants.GroupMoveSelfSearchRadiusMaxMeters,
+            ControlWidth);
+        MirageUi.SliderInt(
             "Stationary target exclusion (sec)",
             ref C.StationaryTargetExclusionSeconds,
             FrontlineConstants.StationaryTargetExclusionSecondsMin,
-            FrontlineConstants.StationaryTargetExclusionSecondsMax);
-        DrawDistanceSlider(
+            FrontlineConstants.StationaryTargetExclusionSecondsMax,
+            ControlWidth);
+        MirageUi.SliderInt(
             "Repeated follow exclude (picks)",
             ref C.RepeatedFollowTargetExcludePickCount,
             FrontlineConstants.RepeatedFollowTargetExcludePickCountMin,
-            FrontlineConstants.RepeatedFollowTargetExcludePickCountMax);
-        ReturnStuckSettings.Draw();
+            FrontlineConstants.RepeatedFollowTargetExcludePickCountMax,
+            ControlWidth);
+        ReturnStuckSettings.Draw(ControlWidth);
 
-        AflImGui.SectionHeader("Spawn");
-        DrawDistanceSlider("Spawn exclusion radius (m)", ref C.SpawnExclusionRadiusMeters);
+        MirageUi.SubHeader("Spawn");
+        MirageUi.SliderInt("Spawn exclusion radius (m)", ref C.SpawnExclusionRadiusMeters, 0, 100, ControlWidth);
 
-        AflImGui.SectionHeader("Duty");
-        ImGui.Checkbox("Auto enter", ref C.AutoEnterEnabled);
-        ImGui.TextDisabled("Enter Frontline when Contents Finder matched Daily Frontline.");
-        ImGui.Checkbox("Auto leave", ref C.AutoLeaveEnabled);
-        ImGui.TextDisabled("Leave Frontline when Frontline result screen is opened.");
+        MirageUi.SubHeader("Duty");
+        using (var group = MirageUi.CheckboxGroup("Auto enter", ref C.AutoEnterEnabled))
+        {
+            if (group.Changed)
+                EzConfig.Save();
+
+            using (MirageUi.DisabledIf(!C.AutoEnterEnabled))
+            {
+                MirageUi.Text(
+                    "Enter Frontline when Contents Finder matched Daily Frontline.",
+                    color: MirageUi.Color.Secondary,
+                    wrap: true);
+            }
+        }
+
+        using (var group = MirageUi.CheckboxGroup("Auto leave", ref C.AutoLeaveEnabled))
+        {
+            if (group.Changed)
+                EzConfig.Save();
+
+            using (MirageUi.DisabledIf(!C.AutoLeaveEnabled))
+            {
+                MirageUi.Text(
+                    "Leave Frontline when Frontline result screen is opened.",
+                    color: MirageUi.Color.Secondary,
+                    wrap: true);
+            }
+        }
     }
 
     private static void DrawModeRow()
@@ -58,8 +89,7 @@ public static class SettingsTab
         if (AutoRunSession.Active || !pluginsReady)
             ImGui.BeginDisabled();
 
-        ImGui.SetNextItemWidth(120f);
-        if (ImGui.Combo("Mode", ref modeIndex, ModeLabels, ModeLabels.Length))
+        if (MirageUi.Combo("Mode", ref modeIndex, ModeLabels, ControlWidth))
         {
             var newMode = (PluginMode)modeIndex;
             if (C.Mode != newMode)
@@ -76,20 +106,18 @@ public static class SettingsTab
             ImGui.EndDisabled();
 
         if (!pluginsReady)
-            ImGui.TextDisabled(RequiredPlugins.GetMissingPluginsMessage());
+            MirageUi.Text(RequiredPlugins.GetMissingPluginsMessage(), color: MirageUi.Color.Secondary, wrap: true);
 
         if (C.Mode == PluginMode.Loop)
         {
             ImGui.SameLine();
-            ImGui.TextDisabled($"{AutoRunSession.CurrentCount} /");
+            MirageUi.Text($"{AutoRunSession.CurrentCount} /", color: MirageUi.Color.Secondary, wrap: false);
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(80f);
             var maxCount = C.AutoMaxCount;
             if (ImGui.InputInt("##AutoMaxCount", ref maxCount, 1, 5))
-            {
                 C.AutoMaxCount = Math.Clamp(maxCount, FrontlineConstants.AutoMaxCountMin, FrontlineConstants.AutoMaxCountMax);
-            }
 
             ImGui.SameLine();
             var canStart = RequiredPlugins.AreAllLoaded
@@ -100,9 +128,7 @@ public static class SettingsTab
                 ImGui.BeginDisabled();
 
             if (ImGui.Button("Start"))
-            {
                 AutoRunSession.Start();
-            }
 
             if (!canStart)
                 ImGui.EndDisabled();
@@ -117,16 +143,5 @@ public static class SettingsTab
             if (!AutoRunSession.Active)
                 ImGui.EndDisabled();
         }
-    }
-
-    private static void DrawDistanceSlider(string label, ref int meters, int min, int max)
-    {
-        ImGui.SetNextItemWidth(AflImGui.DefaultSliderWidth);
-        ImGui.SliderInt(label, ref meters, min, max);
-    }
-
-    private static void DrawDistanceSlider(string label, ref int meters)
-    {
-        DrawDistanceSlider(label, ref meters, 0, 100);
     }
 }

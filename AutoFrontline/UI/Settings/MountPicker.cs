@@ -6,28 +6,28 @@ internal static class MountPicker
 {
     private static string searchFilter = string.Empty;
 
-    public static void Draw()
+    public static void Draw(float width) =>
+        MirageUi.SearchCombo(
+            "Mount##AflMountCombo",
+            MountCatalog.GetDisplayName(C.MountSelectionId),
+            width,
+            ref searchFilter,
+            "##AflMountSearch"u8,
+            "Search...",
+            OnPopupOpened,
+            DrawOptions);
+
+    private static void OnPopupOpened()
     {
-        var preview = MountCatalog.GetDisplayName(C.MountSelectionId);
+        searchFilter = string.Empty;
+        MountCatalog.InvalidateCache();
+    }
 
-        ImGui.AlignTextToFramePadding();
-        ImGui.SetNextItemWidth(AflImGui.DefaultSliderWidth);
-
-        if (!ImGui.BeginCombo("Mount##AflMountCombo", preview, ImGuiComboFlags.HeightLarge))
-            return;
-
-        if (ImGui.IsWindowAppearing())
-        {
-            searchFilter = string.Empty;
-            MountCatalog.InvalidateCache();
-        }
-
-        ImGuiEx.SetNextItemFullWidth();
-        ImGui.InputTextWithHint("##AflMountSearch", "Search...", ref searchFilter, 128);
-
+    private static void DrawOptions()
+    {
         foreach (var option in MountCatalog.GetOptions())
         {
-            if (!MatchesFilter(option.DisplayName, searchFilter))
+            if (!MirageUi.MatchesFilter(option.DisplayName, option.DisplayName, searchFilter))
                 continue;
 
             var selected = option.SelectionId == C.MountSelectionId;
@@ -37,11 +37,5 @@ internal static class MountPicker
             if (ImGui.IsWindowAppearing() && selected)
                 ImGui.SetScrollHereY();
         }
-
-        ImGui.EndCombo();
     }
-
-    private static bool MatchesFilter(string name, string filter) =>
-        string.IsNullOrWhiteSpace(filter)
-        || name.Contains(filter.Trim(), StringComparison.OrdinalIgnoreCase);
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.0.0 - 2026-07-03
+
+- 設定 UI を **MirageUI**（TwoColumn レイアウト）へ移行。サイドバーに General / Settings / Experimental / Debug、フッターに GitHub / OFUSE / Ko-fi リンク
+- プラグインアイコンを同梱（`Assets/AutoFrontlineIcon.png`）し、設定画面サイドバーに表示
+- Settings / Experimental / Debug を MirageUI コントロール（CheckboxGroup、Combo、Slider 等）に統一
+- Experimental: 軍師追従・戦闘モードを CheckboxGroup で説明文・子設定とまとめてインデント表示（OFF 時は無効化）
+- vnavmesh デバッグタブと `VNavmeshIpc` を削除
+- 旧 UI ヘルパー（`AflImGui`、`ConfigFooter`）を削除
+
 ## v1.4.1.0 - 2026-06-27
 
 - 集団行動: search radius 内が 1 名のとき、近い単独より **30m 以内 2 名以上の集団**（中心が最も近いもの）を優先。集団がなければ radius 内の単独を追従

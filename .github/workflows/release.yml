@@ -70,7 +70,7 @@ jobs:
       - name: Pack plugin zip
         run: |
           cd AutoFrontline/bin/Release
-          zip -j AutoFrontline.zip AutoFrontline.dll AutoFrontline.json ECommons.dll
+          zip AutoFrontline.zip AutoFrontline.dll AutoFrontline.json ECommons.dll MirageUI.dll Assets/AutoFrontlineIcon.png
 
       - name: Create GitHub Release
         env:

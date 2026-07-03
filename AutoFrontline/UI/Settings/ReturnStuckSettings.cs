@@ -2,23 +2,22 @@ namespace AutoFrontline.UI;
 
 internal static class ReturnStuckSettings
 {
-    public static void Draw()
+    public static void Draw(float width)
     {
-        AflImGui.SectionHeader("Return (stuck recovery)");
-        ImGui.TextWrapped(
+        MirageUi.SubHeader("Return (stuck recovery)");
+        MirageUi.Text(
             "During group movement, use Return when your position stays within 1m "
-            + $"for this duration while {FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters}m+ from the destination.");
-        ImGui.Spacing();
+            + $"for this duration while {FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters}m+ from the destination.",
+            wrap: true);
 
         var seconds = C.DejonStallSeconds;
-        seconds = Math.Clamp(seconds, FrontlineConstants.DejonStallSecondsMin, FrontlineConstants.DejonStallSecondsMax);
-        ImGui.SetNextItemWidth(AflImGui.DefaultSliderWidth);
-        if (ImGui.SliderFloat(
+        if (MirageUi.SliderFloat(
                 "Stall duration (sec)##ReturnStall",
                 ref seconds,
                 FrontlineConstants.DejonStallSecondsMin,
                 FrontlineConstants.DejonStallSecondsMax,
-                "%.0f"))
+                width,
+                format: "%.0f"))
         {
             C.DejonStallSeconds = seconds;
         }
