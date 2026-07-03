@@ -6,18 +6,26 @@ internal static class CommanderFollowSettings
 {
     public static void Draw()
     {
-        AflImGui.SectionHeader("Commander follow");
-        ImGui.TextWrapped(
-            "Follow the latest alliance chat speaker during Frontline. "
-            + "Combat mode still takes priority over commander follow.");
-        ImGui.Spacing();
+        MirageUi.SubHeader("Commander follow");
 
-        if (ImGui.Checkbox("Enable commander follow##ExpCmdFollow", ref C.CommanderFollowEnabled))
+        using (var group = MirageUi.CheckboxGroup("Enable commander follow##ExpCmdFollow", ref C.CommanderFollowEnabled))
         {
-            if (!C.CommanderFollowEnabled)
-                AllianceCommanderTracker.DismissFollowRequest();
+            if (group.Changed)
+            {
+                if (!C.CommanderFollowEnabled)
+                    AllianceCommanderTracker.DismissFollowRequest();
 
-            EzConfig.Save();
+                EzConfig.Save();
+            }
+
+            using (MirageUi.DisabledIf(!C.CommanderFollowEnabled))
+            {
+                MirageUi.Text(
+                    "Follow the latest alliance chat speaker during Frontline. "
+                    + "Combat mode still takes priority over commander follow.",
+                    color: MirageUi.Color.Secondary,
+                    wrap: true);
+            }
         }
     }
 }

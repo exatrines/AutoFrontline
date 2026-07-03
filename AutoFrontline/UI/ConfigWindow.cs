@@ -1,60 +1,29 @@
-using System.Numerics;
+using ConfigWindowBase = ECommons.SimpleGui.ConfigWindow;
+using Dalamud.Interface.Utility.Raii;
+using MirageUI.Theme;
 
 namespace AutoFrontline.UI;
 
-public static class ConfigWindow
+public sealed class ConfigWindow : ConfigWindowBase
 {
-    private static readonly Vector2 DefaultSize = new(600, 600);
+    private ImRaii.ColorDisposable _themeScope;
 
-    public static void Draw()
+    public ConfigWindow() => MirageWindowDefaults.ApplyTo(this);
+
+    public override void PreDraw()
     {
-        ImGui.SetNextWindowSize(DefaultSize, ImGuiCond.FirstUseEver);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
 
-        var footerHeight = ConfigFooter.GetReservedHeight();
-        var bodyHeight = Math.Max(80f, ImGui.GetContentRegionAvail().Y - footerHeight);
-
-        ImGui.BeginChild("##AflBody", new Vector2(0, bodyHeight));
-        if (ImGui.BeginTabBar("AflTabs"))
-        {
-            DrawTab("General", GeneralTab.Draw, null);
-            DrawTab("Settings", SettingsTab.Draw, null);
-            DrawTab("Experimental", ExperimentalTab.Draw, ImGuiColors.DalamudGrey);
-            DrawTab("Debug", DebugTab.Draw, ImGuiColors.DalamudGrey);
-            ImGui.EndTabBar();
-        }
-
-        ImGui.EndChild();
-
-        ConfigFooter.Draw();
+        MirageTheme.EnsureDefaultsCaptured();
+        _themeScope = MirageTheme.PushCustom(MirageTheme.ResolveAppliedColors());
     }
 
-    private static void DrawTab(string name, Action draw, Vector4? color)
+    public override void PostDraw()
     {
-        if (color != null)
-            ImGui.PushStyleColor(ImGuiCol.Text, color.Value);
-
-        if (ImGui.BeginTabItem(name))
-        {
-            if (color != null)
-                ImGui.PopStyleColor();
-
-            var contentHeight = ImGui.GetContentRegionAvail().Y;
-            ImGui.BeginChild(name + "child", new Vector2(0, contentHeight));
-            try
-            {
-                draw();
-            }
-            catch (Exception e)
-            {
-                e.Log();
-            }
-
-            ImGui.EndChild();
-            ImGui.EndTabItem();
-        }
-        else if (color != null)
-        {
-            ImGui.PopStyleColor();
-        }
+        MirageTheme.Pop(_themeScope);
+        _themeScope = default;
+        ImGui.PopStyleVar();
     }
+
+    public override void Draw() => GenericHelpers.Safe(ConfigWindowContent.Draw);
 }

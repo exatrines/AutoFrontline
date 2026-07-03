@@ -1,9 +1,10 @@
-﻿using System.Numerics;
-using AutoFrontline.Services;
-using Dalamud.Interface.Windowing;
+﻿using AutoFrontline.Services;
+using AutoFrontline.UI;
 using Dalamud.Plugin;
 using ECommons;
 using ECommons.SimpleGui;
+using MirageUI;
+using MirageUI.Theme;
 
 namespace AutoFrontline;
 
@@ -17,10 +18,12 @@ public sealed class Plugin : IDalamudPlugin
     {
         ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
 
+        MirageUi.ConfigureTheme(() => MirageColorSettings.CreateDefault());
+        MirageUi.Init(pluginInterface, Svc.Texture, Svc.Log);
+
         C = EzConfig.Init<Configuration>();
         C.MigrateIfNeeded();
-        EzConfigGui.Init(UI.ConfigWindow.Draw, windowType: EzConfigGui.WindowType.Both);
-        ConfigureConfigWindow();
+        EzConfigGui.Init(new UI.ConfigWindow(), windowType: EzConfigGui.WindowType.Both);
         const string help = "on|off|toggle — Manual/Disable. No args: toggle settings.";
         EzCmd.Add("/autofrontline", PluginCommands.Handle, help);
         PluginDtr.Init();
@@ -29,24 +32,13 @@ public sealed class Plugin : IDalamudPlugin
         Svc.Framework.Update += OnFrameworkUpdate;
     }
 
-    private static void ConfigureConfigWindow()
-    {
-        if (EzConfigGui.Window == null)
-            return;
-
-        EzConfigGui.Window.SizeConstraints = new WindowSizeConstraints
-        {
-            MinimumSize = new Vector2(600, 400),
-            MaximumSize = new Vector2(float.MaxValue, float.MaxValue),
-        };
-    }
-
     private static void OnFrameworkUpdate(object _) => FrontlineAutomation.Update();
 
     public void Dispose()
     {
         Svc.Framework.Update -= OnFrameworkUpdate;
         AllianceCommanderTracker.Dispose();
+        MirageUi.Dispose();
         ECommonsMain.Dispose();
         C = null!;
     }

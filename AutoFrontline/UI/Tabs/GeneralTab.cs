@@ -1,30 +1,47 @@
+using Dalamud.Interface.Colors;
+
 namespace AutoFrontline.UI;
 
 public static class GeneralTab
 {
     public static void Draw()
     {
-        AflImGui.SectionHeader("Auto Frontline");
-        ImGui.TextWrapped("Auto Frontline is a plugin that automatically joins and leaves Frontline duty.");
-        ImGui.Spacing();
+        MirageUi.SubHeader("Overview");
+        MirageUi.Text(
+            "Auto Frontline is a plugin that automatically joins and leaves Frontline duty.",
+            wrap: true);
 
-        AflImGui.SectionHeader("Required plugins");
+        MirageUi.SubHeader("Required plugins");
         foreach (var plugin in RequiredPlugins.Enumerate())
-            AflImGui.DrawPluginStatus(plugin);
+            DrawPluginStatus(plugin);
 
-        AflImGui.SectionHeader("Mode");
-        ImGui.TextWrapped("Loop Mode:");
-        ImGui.Indent();
-        ImGui.TextWrapped("Automatically queue, enter, and leave Frontline up to Max count.");
-        ImGui.Unindent();
-        ImGui.Spacing();
-        ImGui.TextWrapped("Manual Mode:");
-        ImGui.Indent();
-        ImGui.TextWrapped("Manually join Frontline on Contents Finder.");
-        ImGui.Unindent();
-        ImGui.Spacing();
+        MirageUi.SubHeader("Mode");
+        MirageUi.Text("Loop Mode:", wrap: true);
+        MirageUi.Text(
+            "Automatically queue, enter, and leave Frontline up to Max count.",
+            color: MirageUi.Color.Secondary,
+            wrap: true);
+        MirageUi.Text("Manual Mode:", wrap: true);
+        MirageUi.Text(
+            "Manually join Frontline on Contents Finder.",
+            color: MirageUi.Color.Secondary,
+            wrap: true);
 
-        AflImGui.SectionHeader("Recommended Job");
-        ImGui.TextWrapped("BLM or other ranged DPS jobs.");
+        MirageUi.SubHeader("Recommended Job");
+        MirageUi.Text("BLM or other ranged DPS jobs.", wrap: true);
+    }
+
+    private static void DrawPluginStatus(RequiredPlugin plugin)
+    {
+        var loaded = RequiredPlugins.IsLoaded(plugin.InternalName);
+
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGuiEx.Text(
+            loaded ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed,
+            loaded ? FontAwesomeIcon.Check.ToIconString() : FontAwesomeIcon.Times.ToIconString());
+        ImGui.PopFont();
+
+        ImGui.SameLine();
+        MirageUi.Text(plugin.DisplayName);
     }
 }

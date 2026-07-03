@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Numerics;
 using AutoFrontline.Services;
 using ECommons.GameHelpers;
 
@@ -7,146 +10,138 @@ public static class DebugTab
 {
     public static void Draw()
     {
-        if (!ImGui.BeginTabBar("AflDebugSubTabs"))
-            return;
-
-        if (ImGui.BeginTabItem("AutoFrontline"))
-        {
-            DrawAutoFrontline();
-            ImGui.EndTabItem();
-        }
-
-        if (ImGui.BeginTabItem("vnavmesh"))
-        {
-            MeshStatusTab.Draw();
-            ImGui.EndTabItem();
-        }
-
-        ImGui.EndTabBar();
+        DrawSpawnSection();
+        DrawMovementSection();
+        DrawMountSection();
+        DrawReturnSection();
     }
 
-    private static void DrawAutoFrontline()
+    private static void DrawMovementSection()
     {
-        DrawSpawnSection();
+        MirageUi.SubHeader("Movement");
 
-        ImGui.Spacing();
-        AflImGui.SectionHeader("Movement");
-
-        ImGui.Text($"Follow mode: {FollowTargetService.CurrentFollowModeLabel}");
+        MirageUi.Text($"Follow mode: {FollowTargetService.CurrentFollowModeLabel}");
 
         if (!string.IsNullOrEmpty(FollowTargetService.TrackedMemberName))
-            ImGui.Text($"Target player: {FollowTargetService.TrackedMemberName}");
+            MirageUi.Text($"Target player: {FollowTargetService.TrackedMemberName}");
         else
-            ImGui.TextDisabled("Target player: —");
+            MirageUi.Text("Target player: —", color: MirageUi.Color.Secondary);
 
         DrawExcludedFollowTargetsSection();
 
-        ImGui.Spacing();
-
         if (MovementCommands.LastIssuedMoveTo is { } target)
         {
-            ImGui.Text($"Last moveto: {GameCoords.FormatDisplay(target)}");
-            ImGui.TextDisabled($"/vnav moveto {GameCoords.FormatCommand(target)}");
+            MirageUi.Text($"Last moveto: {GameCoords.FormatDisplay(target)}");
+            MirageUi.Text(
+                $"/vnav moveto {GameCoords.FormatCommand(target)}",
+                color: MirageUi.Color.Secondary);
         }
         else
         {
-            ImGui.TextDisabled("Last moveto: —");
+            MirageUi.Text("Last moveto: —", color: MirageUi.Color.Secondary);
         }
+    }
 
-        ImGui.Spacing();
-        DrawMountSection();
-
-        ImGui.Spacing();
-        AflImGui.SectionHeader("Stuck recovery (Return)");
+    private static void DrawReturnSection()
+    {
+        MirageUi.SubHeader("Stuck recovery (Return)");
 
         if (NaviStuckDejonAutomation.IsMonitoringStall)
         {
-            ImGui.Text(
+            MirageUi.Text(
                 $"Stall timer: {NaviStuckDejonAutomation.StallElapsedSeconds:F1} / {NaviStuckDejonAutomation.StallThresholdSeconds:F1} s");
         }
         else if (NaviStuckDejonAutomation.IsStallTimerActive)
         {
-            ImGui.TextDisabled(
-                $"Stall timer: {NaviStuckDejonAutomation.StallElapsedSeconds:F1} / {NaviStuckDejonAutomation.StallThresholdSeconds:F1} s (resetting)");
+            MirageUi.Text(
+                $"Stall timer: {NaviStuckDejonAutomation.StallElapsedSeconds:F1} / {NaviStuckDejonAutomation.StallThresholdSeconds:F1} s (resetting)",
+                color: MirageUi.Color.Secondary);
         }
         else
         {
-            ImGui.TextDisabled("Stall timer: —");
+            MirageUi.Text("Stall timer: —", color: MirageUi.Color.Secondary);
         }
 
-        ImGui.Text($"Phase: {NaviStuckDejonAutomation.StallPhaseLabel}");
+        MirageUi.Text($"Phase: {NaviStuckDejonAutomation.StallPhaseLabel}");
 
         if (NaviStuckDejonAutomation.StallMonitorBlockReason is { Length: > 0 } reason)
-            ImGui.TextDisabled($"Monitor blocked: {reason}");
+            MirageUi.Text($"Monitor blocked: {reason}", color: MirageUi.Color.Secondary);
     }
 
     private static void DrawSpawnSection()
     {
-        AflImGui.SectionHeader("Spawn");
+        MirageUi.SubHeader("Spawn");
 
-        ImGui.Text($"Exclusion radius: {C.SpawnExclusionRadiusMeters} m");
+        MirageUi.Text($"Exclusion radius: {C.SpawnExclusionRadiusMeters} m");
 
         if (FrontlineEntryZone.EntryPosition is not { } entry)
         {
-            ImGui.TextDisabled("Spawn center: —");
-            ImGui.TextDisabled("In exclusion zone: —");
-            ImGui.TextDisabled("Distance to spawn: —");
+            MirageUi.Text("Spawn center: —", color: MirageUi.Color.Secondary);
+            MirageUi.Text("In exclusion zone: —", color: MirageUi.Color.Secondary);
+            MirageUi.Text("Distance to spawn: —", color: MirageUi.Color.Secondary);
         }
         else
         {
-            ImGui.Text($"Spawn center: {GameCoords.FormatDisplay(entry)}");
+            MirageUi.Text($"Spawn center: {GameCoords.FormatDisplay(entry)}");
 
             var inExclusion = FrontlineEntryZone.IsPlayerInExclusion();
-            ImGui.Text($"In exclusion zone: {(inExclusion ? "yes" : "no")}");
+            MirageUi.Text($"In exclusion zone: {(inExclusion ? "yes" : "no")}");
 
             if (Player.Available && Player.Object != null)
             {
                 var distance = FrontlineEntryZone.DistanceToEntry(Player.Object.Position);
-                ImGui.Text($"Distance to spawn: {distance:F1} m");
+                MirageUi.Text($"Distance to spawn: {distance:F1} m");
             }
             else
             {
-                ImGui.TextDisabled("Distance to spawn: —");
+                MirageUi.Text("Distance to spawn: —", color: MirageUi.Color.Secondary);
             }
         }
 
         if (InitialMovementMode.HasFixedExitForCurrentTerritory)
         {
-            ImGui.Text("Fixed spawn exit: configured");
+            MirageUi.Text("Fixed spawn exit: configured");
             if (InitialMovementMode.FixedExitDestination is { } exit)
-                ImGui.TextDisabled($"  {GameCoords.FormatDisplay(exit)}");
+            {
+                MirageUi.Text(
+                    GameCoords.FormatDisplay(exit),
+                    color: MirageUi.Color.Secondary);
+            }
         }
         else
         {
-            ImGui.TextDisabled("Fixed spawn exit: — (group movement only)");
+            MirageUi.Text(
+                "Fixed spawn exit: — (group movement only)",
+                color: MirageUi.Color.Secondary);
         }
 
-        ImGui.Text(
-            $"Left exclusion zone: {(InitialMovementMode.HasLeftSpawnExclusion ? "yes" : "no")}");
-
-        ImGui.Text($"Initial movement mode: {(InitialMovementMode.IsActive ? "active" : "inactive")}");
+        MirageUi.Text($"Left exclusion zone: {(InitialMovementMode.HasLeftSpawnExclusion ? "yes" : "no")}");
+        MirageUi.Text($"Initial movement mode: {(InitialMovementMode.IsActive ? "active" : "inactive")}");
     }
 
     private static void DrawExcludedFollowTargetsSection()
     {
         if (C.StationaryTargetExclusionSeconds <= 0)
         {
-            ImGui.TextDisabled("Excluded follow targets: — (exclusion disabled)");
+            MirageUi.Text(
+                "Excluded follow targets: — (exclusion disabled)",
+                color: MirageUi.Color.Secondary);
             return;
         }
 
         var entries = StationaryTargetExclusion.GetDebugEntries();
         if (entries.Count == 0)
         {
-            ImGui.TextDisabled("Excluded follow targets: —");
+            MirageUi.Text("Excluded follow targets: —", color: MirageUi.Color.Secondary);
             return;
         }
 
-        ImGui.Text($"Excluded follow targets ({entries.Count}):");
+        MirageUi.Text($"Excluded follow targets ({entries.Count}):");
         foreach (var entry in entries)
         {
-            ImGui.BulletText(
-                $"{entry.Name} — {FormatExclusionReason(entry.Reason)} — {entry.RemainingSeconds:F1}s left");
+            MirageUi.Text(
+                $"• {entry.Name} — {FormatExclusionReason(entry.Reason)} — {entry.RemainingSeconds:F1}s left",
+                color: MirageUi.Color.Secondary);
         }
     }
 
@@ -161,39 +156,45 @@ public static class DebugTab
 
     private static void DrawMountSection()
     {
-        AflImGui.SectionHeader("Mount");
+        MirageUi.SubHeader("Mount");
 
-        ImGui.Text(
-            $"Nearby enemies ({C.DismountEnemyDistanceMeters}m): {TrackedPlayerSync.LastNearbyEnemyCount}");
+        MirageUi.Text($"Nearby enemies ({C.DismountEnemyDistanceMeters}m): {TrackedPlayerSync.LastNearbyEnemyCount}");
 
         if (TrackedPlayerSync.LastIcedotomeIrisNearby)
         {
-            ImGui.Text(
+            MirageUi.Text(
                 $"Special combat object ({C.DismountEnemyDistanceMeters}m): {TrackedPlayerSync.LastNearbySpecialCombatName}");
         }
         else
         {
-            ImGui.TextDisabled(
-                $"Special combat object ({C.DismountEnemyDistanceMeters}m): —");
+            MirageUi.Text(
+                $"Special combat object ({C.DismountEnemyDistanceMeters}m): —",
+                color: MirageUi.Color.Secondary);
         }
 
         if (Player.Mounted)
         {
-            ImGui.Text("Status: mounted");
+            MirageUi.Text("Status: mounted");
             if (!TrackedPlayerSync.LastIsSafeToMount)
-                ImGui.TextDisabled($"Dismount pending: {TrackedPlayerSync.LastUnsafeMountReason}");
+            {
+                MirageUi.Text(
+                    $"Dismount pending: {TrackedPlayerSync.LastUnsafeMountReason}",
+                    color: MirageUi.Color.Secondary);
+            }
         }
         else if (Player.Mounting)
         {
-            ImGui.Text("Status: mounting");
+            MirageUi.Text("Status: mounting");
         }
         else if (!TrackedPlayerSync.LastIsSafeToMount)
         {
-            ImGui.Text($"Dismount reason: {TrackedPlayerSync.LastUnsafeMountReason}");
+            MirageUi.Text($"Dismount reason: {TrackedPlayerSync.LastUnsafeMountReason}");
         }
         else
         {
-            ImGui.TextDisabled("Dismount reason: — (safe to mount)");
+            MirageUi.Text(
+                "Dismount reason: — (safe to mount)",
+                color: MirageUi.Color.Secondary);
         }
     }
 }
