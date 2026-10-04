@@ -25,8 +25,12 @@ internal static class PvpLimitBreakSettings
                     spaced: true);
             }
 
+            var name = PvpLimitBreakCatalog.GetActionName(entry);
+            if (name.Length == 0)
+                name = $"Action #{entry.ActionId}";
+
             var enabled = PvpLimitBreakCatalog.IsEnabled(entry.Id);
-            if (MirageUi.Checkbox($"{entry.ActionName}##Lb{entry.Id}", ref enabled))
+            if (MirageUi.Checkbox($"{name}##Lb{entry.Id}", ref enabled))
                 PvpLimitBreakCatalog.SetEnabled(entry.Id, enabled);
         }
 

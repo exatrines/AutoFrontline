@@ -23,6 +23,7 @@ internal static class PvpLimitBreakAutomation
         if (!EzThrottler.Throttle(FrontlineConstants.ThrottlePvpLimitBreak, FrontlineConstants.PvpLimitBreakIntervalMs))
             return;
 
-        Chat.ExecuteCommand($"/pvpaction {actionName}");
+        // 英語など名前に空白を含む言語があるため引用符で囲む。
+        Chat.ExecuteCommand($"/pvpaction \"{actionName}\"");
     }
 }
