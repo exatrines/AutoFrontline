@@ -2,19 +2,17 @@ namespace AutoFrontline.UI;
 
 public static class ExperimentalTab
 {
-    private const float ControlWidth = 200f;
-
     public static void Draw()
     {
-        MirageUi.SubHeader("Experimental");
+        MirageUi.Header("Experimental");
 
         MirageUi.Text(
-            "Experimental features may change or be removed without notice.",
+            I18n.Get("experimental.notice"),
             color: MirageUi.Color.Secondary,
             wrap: true);
 
         CommanderFollowSettings.Draw();
-        HostileModeSettings.Draw(ControlWidth);
+        HostileModeSettings.Draw();
         PvpLimitBreakSettings.Draw();
     }
 }

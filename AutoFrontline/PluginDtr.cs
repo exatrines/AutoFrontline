@@ -11,8 +11,8 @@ internal static class PluginDtr
     private static SeString GetText()
     {
         if (C.Mode == PluginMode.Loop && AutoRunSession.Active)
-            return $"AutoFrontline: Loop {AutoRunSession.CurrentCount}/{C.AutoMaxCount}";
+            return I18n.Format("dtr.loop", AutoRunSession.CurrentCount, C.AutoMaxCount);
 
-        return $"AutoFrontline: {C.Mode}";
+        return I18n.Format("dtr.mode", C.Mode);
     }
 }

@@ -4,7 +4,6 @@ namespace AutoFrontline.Dependencies;
 
 internal readonly record struct RequiredPlugin(string DisplayName, string InternalName);
 
-/// <summary>vnavmesh / Rotation Solver Reborn の有効化チェックと Mode 連動。</summary>
 internal static class RequiredPlugins
 {
     public static readonly RequiredPlugin VNavmesh = new("vnavmesh", "vnavmesh");
@@ -59,7 +58,7 @@ internal static class RequiredPlugins
                 missing.Add(plugin.DisplayName);
         }
 
-        return $"Missing plugins: {string.Join(", ", missing)}";
+        return I18n.Format("required.missing", string.Join(", ", missing));
     }
 
     public static bool IsLoaded(string internalName)

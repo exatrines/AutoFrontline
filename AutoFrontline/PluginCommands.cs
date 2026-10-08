@@ -5,8 +5,6 @@ namespace AutoFrontline;
 
 internal static class PluginCommands
 {
-    private const string Usage = "/autofrontline on|off|toggle - Manual/Disable (no args: toggle settings)";
-
     public static void Handle(string command, string args)
     {
         var parts = args.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -30,7 +28,7 @@ internal static class PluginCommands
                 ToggleConfigWindow();
                 return;
             default:
-                DuoLog.Information(Usage);
+                DuoLog.Information($"/autofrontline {I18n.Get("command.help")}");
                 return;
         }
     }
@@ -48,7 +46,7 @@ internal static class PluginCommands
         if (C.Mode == PluginMode.Loop && AutoRunSession.Active)
         {
             AutoRunSession.Stop();
-            DuoLog.Information("Auto Frontline loop stopped.");
+            DuoLog.Information(I18n.Get("command.loop_stopped"));
             return;
         }
 
@@ -79,14 +77,12 @@ internal static class PluginCommands
 
         if (C.Mode == mode && !AutoRunSession.Active)
         {
-            DuoLog.Information($"Auto Frontline is already in {mode} mode.");
+            DuoLog.Information(I18n.Format("command.already_mode", mode));
             return;
         }
 
         C.Mode = mode;
         EzConfig.Save();
-        DuoLog.Information($"Auto Frontline mode: {mode}.");
+        DuoLog.Information(I18n.Format("command.mode", mode));
     }
-
-    internal static void SetEnabled(bool enabled) => SetMode(enabled ? PluginMode.Manual : PluginMode.Disable);
 }

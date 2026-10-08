@@ -4,53 +4,52 @@ namespace AutoFrontline.UI;
 
 public static class SettingsTab
 {
-    private const float ControlWidth = 200f;
-    private static readonly string[] ModeLabels = ["Disable", "Manual", "Loop"];
-
     public static void Draw()
     {
-        MirageUi.SubHeader("Mode");
+        MirageUi.Header("Settings");
+        DrawLanguageRow();
+
+        MirageUi.SubHeader(I18n.Get("settings.mode"));
         DrawModeRow();
 
-        MirageUi.SubHeader("Movement");
-        MountPicker.Draw(ControlWidth);
+        MirageUi.SubHeader(I18n.Get("settings.movement"));
+        MountPicker.Draw();
         MirageUi.SliderInt(
-            "Dismount distance for enemy (m)",
+            I18n.Get("settings.dismount"),
             ref C.DismountEnemyDistanceMeters,
             0,
-            100,
-            ControlWidth);
+            100);
         MirageUi.SliderFloat(
-            "Move refresh (sec)",
+            I18n.Get("settings.move_refresh"),
             ref C.GroupMovementRefreshIntervalSeconds,
             0.5f,
-            3.0f,
-            ControlWidth);
+            3.0f);
         MirageUi.SliderInt(
-            "Group search radius (m)",
+            I18n.Get("settings.group_radius"),
             ref C.GroupMoveSelfSearchRadiusMeters,
             FrontlineConstants.GroupMoveSelfSearchRadiusMinMeters,
-            FrontlineConstants.GroupMoveSelfSearchRadiusMaxMeters,
-            ControlWidth);
+            FrontlineConstants.GroupMoveSelfSearchRadiusMaxMeters);
         MirageUi.SliderInt(
-            "Stationary target exclusion (sec)",
+            I18n.Get("settings.stationary"),
             ref C.StationaryTargetExclusionSeconds,
             FrontlineConstants.StationaryTargetExclusionSecondsMin,
-            FrontlineConstants.StationaryTargetExclusionSecondsMax,
-            ControlWidth);
+            FrontlineConstants.StationaryTargetExclusionSecondsMax);
         MirageUi.SliderInt(
-            "Repeated follow exclude (picks)",
+            I18n.Get("settings.repeated"),
             ref C.RepeatedFollowTargetExcludePickCount,
             FrontlineConstants.RepeatedFollowTargetExcludePickCountMin,
-            FrontlineConstants.RepeatedFollowTargetExcludePickCountMax,
-            ControlWidth);
-        ReturnStuckSettings.Draw(ControlWidth);
+            FrontlineConstants.RepeatedFollowTargetExcludePickCountMax);
+        ReturnStuckSettings.Draw();
 
-        MirageUi.SubHeader("Spawn");
-        MirageUi.SliderInt("Spawn exclusion radius (m)", ref C.SpawnExclusionRadiusMeters, 0, 100, ControlWidth);
+        MirageUi.SubHeader(I18n.Get("settings.spawn"));
+        MirageUi.SliderInt(
+            I18n.Get("settings.spawn.radius"),
+            ref C.SpawnExclusionRadiusMeters,
+            0,
+            100);
 
-        MirageUi.SubHeader("Duty");
-        using (var group = MirageUi.CheckboxGroup("Auto enter", ref C.AutoEnterEnabled))
+        MirageUi.SubHeader(I18n.Get("settings.duty"));
+        using (var group = MirageUi.CheckboxGroup(I18n.Get("settings.auto_enter"), ref C.AutoEnterEnabled))
         {
             if (group.Changed)
                 EzConfig.Save();
@@ -58,13 +57,13 @@ public static class SettingsTab
             using (MirageUi.DisabledIf(!C.AutoEnterEnabled))
             {
                 MirageUi.Text(
-                    "Enter Frontline when Contents Finder matched Daily Frontline.",
+                    I18n.Get("settings.auto_enter.help"),
                     color: MirageUi.Color.Secondary,
                     wrap: true);
             }
         }
 
-        using (var group = MirageUi.CheckboxGroup("Auto leave", ref C.AutoLeaveEnabled))
+        using (var group = MirageUi.CheckboxGroup(I18n.Get("settings.auto_leave"), ref C.AutoLeaveEnabled))
         {
             if (group.Changed)
                 EzConfig.Save();
@@ -72,76 +71,115 @@ public static class SettingsTab
             using (MirageUi.DisabledIf(!C.AutoLeaveEnabled))
             {
                 MirageUi.Text(
-                    "Leave Frontline when Frontline result screen is opened.",
+                    I18n.Get("settings.auto_leave.help"),
                     color: MirageUi.Color.Secondary,
                     wrap: true);
             }
         }
     }
 
+    private static string[] ModeLabels() =>
+    [
+        I18n.Get("settings.mode.disable"),
+        I18n.Get("settings.mode.manual"),
+        I18n.Get("settings.mode.loop"),
+    ];
+
+    private static void DrawLanguageRow()
+    {
+        var selected = NormalizeUiLanguageSetting(C.UiLanguage);
+        var labels = new[]
+        {
+            I18n.Get("settings.language.client"),
+            I18n.Get("settings.language.en"),
+            I18n.Get("settings.language.ja"),
+        };
+        var values = new[] { I18n.FollowClient, "en", "ja" };
+        var selectedLabel = labels[Array.IndexOf(values, selected)];
+
+        if (!MirageUi.Dropdown(
+                I18n.Get("settings.language"),
+                ref selectedLabel,
+                labels,
+                id: "uiLanguage",
+                allowClear: false))
+            return;
+
+        var index = Array.IndexOf(labels, selectedLabel);
+        if (index < 0)
+            return;
+
+        var next = values[index];
+        if (string.Equals(C.UiLanguage, next, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        C.UiLanguage = next;
+        EzConfig.Save();
+        I18n.ApplyFromConfig();
+    }
+
+    private static string NormalizeUiLanguageSetting(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)
+            || string.Equals(value, I18n.FollowClient, StringComparison.OrdinalIgnoreCase))
+            return I18n.FollowClient;
+
+        var lang = value.Trim().ToLowerInvariant();
+        if (lang.Length > 2)
+            lang = lang[..2];
+        return lang is "en" or "ja" ? lang : I18n.FollowClient;
+    }
+
     private static void DrawModeRow()
     {
         var pluginsReady = RequiredPlugins.AreAllLoaded;
+        var labels = ModeLabels();
         var modeIndex = pluginsReady ? (int)C.Mode : (int)PluginMode.Disable;
-        if (modeIndex < 0 || modeIndex >= ModeLabels.Length)
+        if (modeIndex < 0 || modeIndex >= labels.Length)
             modeIndex = 0;
 
-        if (AutoRunSession.Active || !pluginsReady)
-            ImGui.BeginDisabled();
-
-        if (MirageUi.Combo("Mode", ref modeIndex, ModeLabels, ControlWidth))
+        var selected = labels[modeIndex];
+        using (MirageUi.DisabledIf(AutoRunSession.Active || !pluginsReady))
         {
-            var newMode = (PluginMode)modeIndex;
-            if (C.Mode != newMode)
+            if (MirageUi.Dropdown(I18n.Get("settings.mode"), ref selected, labels, allowClear: false, id: "mode"))
             {
-                if (newMode != PluginMode.Loop)
-                    AutoRunSession.Stop();
+                var newIndex = Array.IndexOf(labels, selected);
+                if (newIndex >= 0)
+                {
+                    var newMode = (PluginMode)newIndex;
+                    if (C.Mode != newMode)
+                    {
+                        if (newMode != PluginMode.Loop)
+                            AutoRunSession.Stop();
 
-                C.Mode = newMode;
-                EzConfig.Save();
+                        C.Mode = newMode;
+                        EzConfig.Save();
+                    }
+                }
             }
         }
-
-        if (AutoRunSession.Active || !pluginsReady)
-            ImGui.EndDisabled();
 
         if (!pluginsReady)
             MirageUi.Text(RequiredPlugins.GetMissingPluginsMessage(), color: MirageUi.Color.Secondary, wrap: true);
 
-        if (C.Mode == PluginMode.Loop)
-        {
-            ImGui.SameLine();
-            MirageUi.Text($"{AutoRunSession.CurrentCount} /", color: MirageUi.Color.Secondary, wrap: false);
+        if (C.Mode != PluginMode.Loop)
+            return;
 
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(80f);
-            var maxCount = C.AutoMaxCount;
-            if (ImGui.InputInt("##AutoMaxCount", ref maxCount, 1, 5))
-                C.AutoMaxCount = Math.Clamp(maxCount, FrontlineConstants.AutoMaxCountMin, FrontlineConstants.AutoMaxCountMax);
+        MirageUi.Text($"{AutoRunSession.CurrentCount} / {C.AutoMaxCount}", color: MirageUi.Color.Secondary);
 
-            ImGui.SameLine();
-            var canStart = RequiredPlugins.AreAllLoaded
-                && !AutoRunSession.Active
-                && C.AutoMaxCount >= FrontlineConstants.AutoMaxCountMin;
+        var maxCount = C.AutoMaxCount;
+        if (MirageUi.InputInt(I18n.Get("settings.loop.count"), ref maxCount, id: "AutoMaxCount"))
+            C.AutoMaxCount = Math.Clamp(maxCount, FrontlineConstants.AutoMaxCountMin, FrontlineConstants.AutoMaxCountMax);
 
-            if (!canStart)
-                ImGui.BeginDisabled();
+        var canStart = RequiredPlugins.AreAllLoaded
+            && !AutoRunSession.Active
+            && C.AutoMaxCount >= FrontlineConstants.AutoMaxCountMin;
 
-            if (ImGui.Button("Start"))
-                AutoRunSession.Start();
+        if (MirageUi.PrimaryButton(I18n.Get("settings.start"), enabled: canStart, id: "loop-start"))
+            AutoRunSession.Start();
 
-            if (!canStart)
-                ImGui.EndDisabled();
-
-            ImGui.SameLine();
-            if (!AutoRunSession.Active)
-                ImGui.BeginDisabled();
-
-            if (ImGui.Button("Stop"))
-                AutoRunSession.Stop();
-
-            if (!AutoRunSession.Active)
-                ImGui.EndDisabled();
-        }
+        ImGui.SameLine();
+        if (MirageUi.SecondaryButton(I18n.Get("settings.stop"), enabled: AutoRunSession.Active, id: "loop-stop"))
+            AutoRunSession.Stop();
     }
 }

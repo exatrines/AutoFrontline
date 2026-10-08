@@ -6,7 +6,6 @@ using ECommons.UIHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>集団行動中にプレイヤー座標が一定時間変わらないとき vnav stop → Return（JP: デジョン）→ SelectYesno Yes。</summary>
 internal static class NaviStuckDejonAutomation
 {
     private static string ReturnActionName =>
@@ -39,22 +38,22 @@ internal static class NaviStuckDejonAutomation
         get
         {
             if (!AutomationContext.IsInFrontline)
-                return "not in frontline";
+                return I18n.Get("debug.block.not_frontline");
 
             if (!movetoActive)
-                return "moveto inactive";
+                return I18n.Get("debug.block.moveto_inactive");
 
             if (!FollowTargetService.IsGroupMovementMode)
-                return "not group movement";
+                return I18n.Get("debug.block.not_group");
 
             if (!InitialMovementMode.HasLeftSpawnExclusion)
-                return "before first spawn exit";
+                return I18n.Get("debug.block.before_exit");
 
             if (!TryGetStallDestinationDistance(out var distance))
-                return "no move destination";
+                return I18n.Get("debug.block.no_dest");
 
             if (distance < FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters)
-                return $"destination < {FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters}m";
+                return I18n.Format("debug.block.dest_near", FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters);
 
             return string.Empty;
         }
@@ -65,22 +64,22 @@ internal static class NaviStuckDejonAutomation
         get
         {
             if (awaitingReturnConfirm)
-                return "awaiting return confirm";
+                return I18n.Get("debug.phase.awaiting");
 
             if (!movetoActive)
-                return "idle";
+                return I18n.Get("debug.phase.idle");
 
             if (!IsGroupMovementMonitoring())
-                return "not group movement";
+                return I18n.Get("debug.phase.not_group");
 
             if (TryGetStallDestinationDistance(out var distance)
                 && distance < FrontlineConstants.NaviStuckDejonMinDestinationDistanceMeters)
-                return "near destination";
+                return I18n.Get("debug.phase.near");
 
             if (StallElapsedSeconds >= StallThresholdSeconds)
-                return "triggering";
+                return I18n.Get("debug.phase.triggering");
 
-            return "monitoring";
+            return I18n.Get("debug.phase.monitoring");
         }
     }
 

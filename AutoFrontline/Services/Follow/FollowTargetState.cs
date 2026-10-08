@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace AutoFrontline.Services;
 
-/// <summary>追跡対象・移動先の共有状態。</summary>
+/// <summary>Shared tracked member and move-target state.</summary>
 internal static class FollowTargetState
 {
     internal static ulong TrackedContentId { get; set; }

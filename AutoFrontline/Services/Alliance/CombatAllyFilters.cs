@@ -3,7 +3,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>自分・PT・アライアンス味方の ContentId 集合。</summary>
+/// <summary>ContentIds of self, party, and alliance allies.</summary>
 internal static class CombatAllyFilters
 {
     public static HashSet<ulong> BuildContentIds(IReadOnlyList<AllianceMemberSnapshot> allies)

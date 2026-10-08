@@ -6,11 +6,9 @@ using ECommons.GameHelpers;
 namespace AutoFrontline.Services;
 
 /// <summary>
-/// 集団行動: search radius 内に 2 名以上いればその中で最も密集した味方を選ぶ。
-/// radius 内が 1 名のときは radius 内の単独より、30m 以内 2 名以上の集団のうち
-/// 中心が最も近いものを選ぶ（集団がなければ radius 内の単独を追う）。
-/// radius 内が 0 名のときは最寄り 2 名を候補に密集度判定する。
-/// 同規模の集団が複数あるときは、自分に最も近い候補を選ぶ。
+/// Group movement: densest ally in search radius when 2+ are nearby.
+/// With one in radius, prefer a 30m cluster over the lone ally.
+/// With none in radius, score the nearest two. Ties go to the closer group.
 /// </summary>
 internal static class GroupMoveSelector
 {
@@ -76,7 +74,7 @@ internal static class GroupMoveSelector
         return FindDensestAmong(nearestGroup, alive, selfPosition);
     }
 
-    /// <summary>30m 以内で連結した 2 名以上の味方クラスタを列挙する。</summary>
+    /// <summary>Connected ally clusters of 2+ within 30m.</summary>
     private static List<List<AllianceMemberSnapshot>> FindGroups(IReadOnlyList<AllianceMemberSnapshot> alive)
     {
         var radiusSq = FrontlineConstants.GroupMoveDensityRadiusMeters

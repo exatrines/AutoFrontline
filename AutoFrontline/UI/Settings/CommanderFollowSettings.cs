@@ -6,9 +6,9 @@ internal static class CommanderFollowSettings
 {
     public static void Draw()
     {
-        MirageUi.SubHeader("Commander follow");
+        MirageUi.SubHeader(I18n.Get("experimental.commander"));
 
-        using (var group = MirageUi.CheckboxGroup("Enable commander follow##ExpCmdFollow", ref C.CommanderFollowEnabled))
+        using (var group = MirageUi.CheckboxGroup(I18n.Get("experimental.commander.enable"), ref C.CommanderFollowEnabled))
         {
             if (group.Changed)
             {
@@ -21,8 +21,7 @@ internal static class CommanderFollowSettings
             using (MirageUi.DisabledIf(!C.CommanderFollowEnabled))
             {
                 MirageUi.Text(
-                    "Follow the latest alliance chat speaker during Frontline. "
-                    + "Combat mode still takes priority over commander follow.",
+                    I18n.Get("experimental.commander.help"),
                     color: MirageUi.Color.Secondary,
                     wrap: true);
             }

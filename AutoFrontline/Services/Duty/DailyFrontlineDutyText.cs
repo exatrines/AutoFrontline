@@ -3,7 +3,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontline.Services;
 
-/// <summary>コンテンツファインダー参加確認のデイリーフロントライン判定。</summary>
+/// <summary>Daily Frontline match on the duty confirm addon.</summary>
 internal static unsafe class DailyFrontlineDutyText
 {
     public static bool IsDailyFrontlineMatching(AtkUnitBase* addon)

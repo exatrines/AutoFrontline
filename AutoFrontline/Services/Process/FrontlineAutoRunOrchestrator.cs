@@ -3,7 +3,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>Loop モードのループ（キュー・入室カウント・MaxCount 停止）を制御する。</summary>
+/// <summary>Loop queue, enter count, and MaxCount stop.</summary>
 internal static class FrontlineAutoRunOrchestrator
 {
     public static void Update()

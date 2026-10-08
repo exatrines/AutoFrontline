@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace AutoFrontline.Services;
 
-/// <summary>vnavmesh と Rotation Solver へのチャットコマンド送信。</summary>
+/// <summary>Chat commands for vnavmesh and Rotation Solver.</summary>
 internal static class MovementCommands
 {
     public static Vector3? LastIssuedMoveTo { get; private set; }

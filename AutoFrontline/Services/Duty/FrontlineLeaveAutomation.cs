@@ -4,9 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontline.Services;
 
-/// <summary>
-/// 試合終了画面表示中に <see cref="EventFramework.LeaveCurrentContent"/> を呼ぶ（Update ポーリング）。
-/// </summary>
+/// <summary>Leaves the duty while the result screen is shown.</summary>
 public static unsafe class FrontlineLeaveAutomation
 {
     public static bool IsRecordScreenVisible => IsRecordScreenReady();

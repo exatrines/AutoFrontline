@@ -10,8 +10,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace AutoFrontline.Services;
 
 /// <summary>
-/// コンテンツルーレットでデイリーチャレンジ・フロントラインへ参加申請する。
-/// リスト行は Text #6、選択確定は callback 3（AutoDuty SelectDuty と同じ Leaf インデックス）。
+/// Queues Daily Frontline via duty roulette.
+/// List row is Text #6; confirm is callback 3 (same leaf index as AutoDuty SelectDuty).
 /// </summary>
 internal static unsafe class ContentsFinderQueueAutomation
 {
@@ -133,7 +133,7 @@ internal static unsafe class ContentsFinderQueueAutomation
         agent->OpenRouletteDuty(rouletteRowId);
     }
 
-    /// <summary>callback 3 でチェックをトグル（表示スロットではなくツリー vector インデックス）。</summary>
+    /// <summary>Toggle via callback 3 (tree vector index, not display slot).</summary>
     private static bool TryToggleFrontlineSelection(
         AddonContentsFinder* addon,
         out uint leafIndex,

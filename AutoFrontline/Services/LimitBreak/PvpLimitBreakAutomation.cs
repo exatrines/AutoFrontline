@@ -3,7 +3,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>戦闘モード（敵対追従）中に、有効なジョブ設定の PvP LB を /pvpaction で実行する。</summary>
+/// <summary>Uses /pvpaction for the current job while in hostile follow.</summary>
 internal static class PvpLimitBreakAutomation
 {
     public static void Update()

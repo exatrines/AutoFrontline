@@ -4,7 +4,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>敵プレイヤーと特殊戦闘オブジェクト（リス・ドローン等）のうち最も近い対象をターゲットする。</summary>
+/// <summary>Targets the nearest enemy player or special combat object.</summary>
 internal static class ClosestEnemyPlayerTargeting
 {
     public static void Update()

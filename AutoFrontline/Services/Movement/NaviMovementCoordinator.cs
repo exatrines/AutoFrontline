@@ -1,6 +1,6 @@
 namespace AutoFrontline.Services;
 
-/// <summary>追従 moveto の発行。</summary>
+/// <summary>Issues follow moveto commands.</summary>
 internal static class NaviMovementCoordinator
 {
     public static void IssueMoveTo(System.Numerics.Vector3 target)

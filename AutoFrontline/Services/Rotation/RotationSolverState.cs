@@ -4,17 +4,15 @@ using ECommons.Reflection;
 
 namespace AutoFrontline.Services;
 
-/// <summary>Rotation Solver Reborn の稼働状態（DataCenter 参照）。</summary>
+/// <summary>Rotation Solver Reborn DataCenter state.</summary>
 internal enum RotationSolverOperatingState
 {
     Unknown,
-    /// <summary>RSR Auto Off（DataCenter.State == false）。</summary>
     Off,
     Manual,
     AutoBig,
     AutoManual,
     AutoOther,
-    /// <summary>RSR PvP モード（DataCenter.IsPvPStateEnabled == true）。</summary>
     PvP,
 }
 

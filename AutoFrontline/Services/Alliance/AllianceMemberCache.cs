@@ -3,7 +3,7 @@ using ECommons.DalamudServices;
 
 namespace AutoFrontline.Services;
 
-/// <summary>フレーム内のアライアンスメンバー収集結果を共有する。</summary>
+/// <summary>Per-frame cached alliance member list.</summary>
 internal static class AllianceMemberCache
 {
     private static uint cachedTerritoryId;

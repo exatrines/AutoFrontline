@@ -5,7 +5,7 @@ namespace AutoFrontline.Services;
 
 internal readonly record struct PvpLimitBreakEntry(string Id, Job Job, string ActionName);
 
-/// <summary>PvP リミットブレイク（/pvpaction）とジョブの対応表。</summary>
+/// <summary>PvP limit break /pvpaction catalog by job.</summary>
 internal static class PvpLimitBreakCatalog
 {
     public static readonly IReadOnlyList<PvpLimitBreakEntry> All =

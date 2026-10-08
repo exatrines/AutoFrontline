@@ -7,9 +7,9 @@ internal static class PvpLimitBreakSettings
 {
     public static void Draw()
     {
-        MirageUi.SubHeader("Auto Limit Break");
+        MirageUi.SubHeader(I18n.Get("experimental.lb"));
         MirageUi.Text(
-            "Hostile mode only. Uses /pvpaction when enabled for your current job.",
+            I18n.Get("experimental.lb.help"),
             wrap: true);
 
         Job? previousJob = null;
@@ -33,7 +33,7 @@ internal static class PvpLimitBreakSettings
         if (PvpLimitBreakCatalog.IsEnabled("SMN_Bahamut") && PvpLimitBreakCatalog.IsEnabled("SMN_Phoenix"))
         {
             MirageUi.Text(
-                "Note: only the first enabled Summoner option is used (Bahamut).",
+                I18n.Get("experimental.lb.smn_note"),
                 color: MirageUi.Color.Secondary,
                 wrap: true);
         }

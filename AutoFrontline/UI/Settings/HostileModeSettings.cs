@@ -4,11 +4,11 @@ namespace AutoFrontline.UI;
 
 internal static class HostileModeSettings
 {
-    public static void Draw(float controlWidth)
+    public static void Draw()
     {
-        MirageUi.SubHeader("Combat mode");
+        MirageUi.SubHeader(I18n.Get("experimental.combat"));
 
-        using (var group = MirageUi.CheckboxGroup("Enable combat mode##ExpHostileMode", ref C.HostileModeEnabled))
+        using (var group = MirageUi.CheckboxGroup(I18n.Get("experimental.combat.enable"), ref C.HostileModeEnabled))
         {
             if (group.Changed)
                 EzConfig.Save();
@@ -16,26 +16,23 @@ internal static class HostileModeSettings
             using (MirageUi.DisabledIf(!C.HostileModeEnabled))
             {
                 MirageUi.Text(
-                    "When enabled, move toward allies near the closest enemy within 30m. "
-                    + "Takes priority over commander follow and group movement.",
+                    I18n.Get("experimental.combat.help"),
                     color: MirageUi.Color.Secondary,
                     wrap: true);
 
                 MirageUi.SliderFloat(
-                    "Combat mode refresh (sec)",
+                    I18n.Get("experimental.combat.refresh"),
                     ref C.HostileModeRefreshIntervalSeconds,
                     0.5f,
-                    3.0f,
-                    controlWidth);
+                    3.0f);
                 if (ImGui.IsItemDeactivatedAfterEdit())
                     EzConfig.Save();
 
                 MirageUi.SliderFloat(
-                    "Combat mode position",
+                    I18n.Get("experimental.combat.position"),
                     ref C.HostileModePositionRatio,
                     0f,
                     1f,
-                    controlWidth,
                     format: "%.2f");
                 if (ImGui.IsItemDeactivatedAfterEdit())
                     EzConfig.Save();

@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AutoFrontline.Services;
 
-/// <summary>コンテンツファインダー参加確認で Commence を押す。</summary>
+/// <summary>Presses Commence on the duty confirm dialog.</summary>
 public static unsafe class FrontlineDutyConfirmAutomation
 {
     private static bool commencedForCurrentAddon;

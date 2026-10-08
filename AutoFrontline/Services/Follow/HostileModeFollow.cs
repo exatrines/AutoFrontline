@@ -10,7 +10,7 @@ internal readonly record struct HostileFollowSnapshot(
     string EnemyName,
     IReadOnlyList<AllianceMemberSnapshot> AlliesNearEnemy);
 
-/// <summary>敵対モード: 最寄り敵・味方列・ナビ位置の算出。</summary>
+/// <summary>Hostile mode: nearest enemy, ally line, and navi position.</summary>
 internal static class HostileModeFollow
 {
     public static bool IsEligible(IReadOnlyList<AllianceMemberSnapshot> members) =>

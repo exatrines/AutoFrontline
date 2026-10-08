@@ -3,7 +3,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>RSR が Manual 以外なら Manual へ揃える。</summary>
+/// <summary>Forces Rotation Solver to Manual in a match.</summary>
 internal static class RotationModeAutomation
 {
     public static void Update()

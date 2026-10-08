@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.6.0.0 - 2026-10-09
+
+- UI language: Follow client, or lock English / Japanese
+- Plugin page (title-bar Heart or sidebar icon): Discord, Support, and GitHub
+- New plugin icon (AF)
+- Window, sidebar, and tab names stay English; plugin page copy stays English
+- Recommended job: use Black Mage or any ranged DPS; melee may not work well enough
+- Latest MirageUI (TwoColumn, dropdowns, plugin page). Config footer links removed
+- README in English and Japanese
+- Icon and i18n files ship from `Data/`
+
 ## v1.5.0.0 - 2026-07-03
 
 - 設定 UI を **MirageUI**（TwoColumn レイアウト）へ移行。サイドバーに General / Settings / Experimental / Debug、フッターに GitHub / OFUSE / Ko-fi リンク
@@ -161,3 +172,5 @@
 - vnavmesh / Rotation Solver Reborn 連携（必須プラグイン検証付き）
 - マウント・移動・試合終了時の自動退出
 - 設定 UI（General / Debug）
+
+[v1.6.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.5.0.0...v1.6.0.0

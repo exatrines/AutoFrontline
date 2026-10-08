@@ -18,14 +18,20 @@ public sealed class Plugin : IDalamudPlugin
     {
         ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
 
-        MirageUi.ConfigureTheme(() => MirageColorSettings.CreateDefault());
-        MirageUi.Init(pluginInterface, Svc.Texture, Svc.Log);
-
         C = EzConfig.Init<Configuration>();
         C.MigrateIfNeeded();
+        I18n.Init(pluginInterface);
+
+        MirageUi.ConfigureTheme(() => MirageColorSettings.CreateDefault());
+        MirageUi.Init(pluginInterface, Svc.Texture, Svc.Log);
+        MirageUi.ConfigurePluginInfo(info =>
+        {
+            info.Message = "Support development via the Support page.";
+            info.DiscordUrl = SupportLinks.DiscordUrl;
+            info.SupportUrl = SupportLinks.SupportUrl;
+        });
         EzConfigGui.Init(new UI.ConfigWindow(), windowType: EzConfigGui.WindowType.Both);
-        const string help = "on|off|toggle — Manual/Disable. No args: toggle settings.";
-        EzCmd.Add("/autofrontline", PluginCommands.Handle, help);
+        EzCmd.Add("/autofrontline", PluginCommands.Handle, I18n.Get("command.help"));
         PluginDtr.Init();
         AllianceCommanderTracker.Init();
 
@@ -38,6 +44,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         Svc.Framework.Update -= OnFrameworkUpdate;
         AllianceCommanderTracker.Dispose();
+        I18n.Dispose();
         MirageUi.Dispose();
         ECommonsMain.Dispose();
         C = null!;

@@ -14,4 +14,5 @@ global using ECommons.Throttlers;
 global using ECommons.Automation;
 global using MirageUI;
 global using static MirageUI.Ui.MirageLayout;
+global using AutoFrontline;
 global using static AutoFrontline.Plugin;

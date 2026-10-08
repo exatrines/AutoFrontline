@@ -8,10 +8,15 @@ public sealed class ConfigWindow : ConfigWindowBase
 {
     private ImRaii.ColorDisposable _themeScope;
 
-    public ConfigWindow() => MirageWindowDefaults.ApplyTo(this);
+    public ConfigWindow()
+    {
+        WindowName = "Auto Frontline###autofrontline";
+        MirageWindowDefaults.ApplyTo(this);
+    }
 
     public override void PreDraw()
     {
+        WindowName = "Auto Frontline###autofrontline";
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
 
         MirageTheme.EnsureDefaultsCaptured();

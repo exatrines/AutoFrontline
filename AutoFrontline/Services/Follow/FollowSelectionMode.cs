@@ -12,9 +12,9 @@ internal static class FollowSelectionModeExtensions
 {
     public static string ToDisplayLabel(this FollowSelectionMode mode) => mode switch
     {
-        FollowSelectionMode.GroupMovement => "集団行動",
-        FollowSelectionMode.Hostile => "戦闘",
-        FollowSelectionMode.FollowCommander => "軍師追従",
-        _ => "—",
+        FollowSelectionMode.GroupMovement => I18n.Get("follow.group"),
+        FollowSelectionMode.Hostile => I18n.Get("follow.combat"),
+        FollowSelectionMode.FollowCommander => I18n.Get("follow.commander"),
+        _ => I18n.Get("follow.none"),
     };
 }

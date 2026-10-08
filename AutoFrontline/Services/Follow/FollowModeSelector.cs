@@ -5,7 +5,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>追跡モードの優先順位に従い対象を選定する。</summary>
+/// <summary>Picks a follow target by mode priority.</summary>
 internal static class FollowModeSelector
 {
     internal static void Update()

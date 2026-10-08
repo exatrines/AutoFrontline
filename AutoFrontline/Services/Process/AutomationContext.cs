@@ -2,7 +2,7 @@ using ECommons.DalamudServices;
 
 namespace AutoFrontline.Services;
 
-/// <summary>フロントライン自動化の共通実行条件。</summary>
+/// <summary>Shared Frontline automation gates.</summary>
 internal static class AutomationContext
 {
     public static bool IsAutomationActive => RequiredPlugins.IsAutomationActive;

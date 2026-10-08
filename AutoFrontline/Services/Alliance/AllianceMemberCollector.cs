@@ -11,7 +11,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Info;
 
 namespace AutoFrontline.Services;
 
-/// <summary>フロントライン中のアライアンス／パーティ／CW メンバー収集。</summary>
+/// <summary>Collects alliance / party / cross-world members in Frontline.</summary>
 public static unsafe class AllianceMemberCollector
 {
     public static List<AllianceMemberSnapshot> Collect()

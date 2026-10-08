@@ -9,7 +9,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>アライアンスチャットの直近発言者を軍師として追跡する。</summary>
+/// <summary>Tracks the latest alliance-chat speaker as commander.</summary>
 public static class AllianceCommanderTracker
 {
     public static ulong LatestCommanderContentId { get; private set; }
@@ -75,7 +75,7 @@ public static class AllianceCommanderTracker
 
     public static void ConsumeNeedsReselect() => NeedsReselect = false;
 
-    /// <summary>戦闘優先などで軍師追従要求を取り消す（LatestCommander は Debug 用に残す）。</summary>
+    /// <summary>Cancels a pending commander follow. LatestCommander stays for Debug.</summary>
     public static void DismissFollowRequest() => IsFollowPending = false;
 
     public static void Clear()

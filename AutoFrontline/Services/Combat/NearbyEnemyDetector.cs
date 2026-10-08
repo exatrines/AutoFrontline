@@ -9,7 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 namespace AutoFrontline.Services;
 
-/// <summary>半径内の敵対プレイヤー（自分・PT・アライアンス以外）を検出する。</summary>
+/// <summary>Hostile players in radius, excluding self / party / alliance.</summary>
 internal static unsafe class NearbyEnemyDetector
 {
     public static bool HasNearbyEnemy(IReadOnlyList<AllianceMemberSnapshot> allies, out int countWithinRadius)

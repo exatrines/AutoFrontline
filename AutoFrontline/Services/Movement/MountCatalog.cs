@@ -6,12 +6,11 @@ using Lumina.Excel.Sheets;
 
 namespace AutoFrontline.Services;
 
-/// <summary>設定 UI 用マウント一覧（先頭はマウントルーレット、以降は所持分のみ）。</summary>
+/// <summary>Owned mounts for the settings combo, plus roulette.</summary>
 internal readonly record struct MountOption(uint SelectionId, string DisplayName);
 
 internal static unsafe class MountCatalog
 {
-    /// <summary>マウントルーレット（GeneralAction）。</summary>
     public const uint RouletteSelectionId = 0;
 
     private static MountOption[] cachedOptions = [];

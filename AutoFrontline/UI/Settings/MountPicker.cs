@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoFrontline.Services;
 
 namespace AutoFrontline.UI;
@@ -6,36 +7,29 @@ internal static class MountPicker
 {
     private static string searchFilter = string.Empty;
 
-    public static void Draw(float width) =>
-        MirageUi.SearchCombo(
-            "Mount##AflMountCombo",
-            MountCatalog.GetDisplayName(C.MountSelectionId),
-            width,
-            ref searchFilter,
-            "##AflMountSearch"u8,
-            "Search...",
-            OnPopupOpened,
-            DrawOptions);
-
-    private static void OnPopupOpened()
+    public static void Draw()
     {
-        searchFilter = string.Empty;
-        MountCatalog.InvalidateCache();
-    }
+        var options = MountCatalog.GetOptions();
+        var names = options.Select(option => option.DisplayName).ToArray();
+        var selected = MountCatalog.GetDisplayName(C.MountSelectionId);
 
-    private static void DrawOptions()
-    {
-        foreach (var option in MountCatalog.GetOptions())
+        if (!MirageUi.SearchableDropdown(
+                I18n.Get("settings.mount"),
+                ref selected,
+                names,
+                ref searchFilter,
+                allowClear: false,
+                searchHint: I18n.Get("settings.mount.search"),
+                id: "mount"))
+            return;
+
+        foreach (var option in options)
         {
-            if (!MirageUi.MatchesFilter(option.DisplayName, option.DisplayName, searchFilter))
+            if (option.DisplayName != selected)
                 continue;
 
-            var selected = option.SelectionId == C.MountSelectionId;
-            if (ImGui.Selectable(option.DisplayName, selected))
-                C.MountSelectionId = option.SelectionId;
-
-            if (ImGui.IsWindowAppearing() && selected)
-                ImGui.SetScrollHereY();
+            C.MountSelectionId = option.SelectionId;
+            return;
         }
     }
 }

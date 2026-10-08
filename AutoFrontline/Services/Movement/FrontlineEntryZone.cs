@@ -4,7 +4,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>フロントライン入室座標とスポーン除外半径（セッション専用、設定には保存しない）。</summary>
+/// <summary>Session spawn center and exclusion radius (not persisted).</summary>
 internal static class FrontlineEntryZone
 {
     public static Vector3? EntryPosition { get; private set; }
@@ -13,7 +13,7 @@ internal static class FrontlineEntryZone
     {
         var inFrontline = FrontlineFields.IsFrontline(Svc.ClientState.TerritoryType);
 
-        // 入室直後は Player が未 Available のフレームがあり、遷移 edge だけでは取り逃す
+        // Player can be unavailable for a frame after zone-in; an edge-only capture misses it.
         if (inFrontline && EntryPosition == null && Player.Available && Player.Object != null)
             EntryPosition = Player.Object.Position;
 
@@ -45,10 +45,8 @@ internal static class FrontlineEntryZone
         return IsWithinExclusion(target);
     }
 
-    /// <summary>スポーン除外圏内では敵ターゲットを取らない（自位置または敵位置が圏内）。</summary>
     public static bool ShouldSkipEnemyTargeting() => IsPlayerInExclusion();
 
-    /// <summary>スポーン除外圏内では敵ターゲットを取らない（自位置または敵位置が圏内）。</summary>
     public static bool ShouldSkipEnemyTargeting(Vector3 enemyPosition) =>
         IsPlayerInExclusion() || IsWithinExclusion(enemyPosition);
 

@@ -7,7 +7,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>ModelCharaId 指定のフロントライン特殊戦闘オブジェクト（リス・ドローン等）の検出。</summary>
+/// <summary>Frontline special combat objects by ModelCharaId.</summary>
 internal static class FrontlineSpecialCombatTargetDetector
 {
     private static readonly (uint ModelCharaId, string DebugName, uint? TerritoryId)[] Targets =

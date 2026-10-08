@@ -5,7 +5,6 @@ using Lumina.Excel.Sheets;
 
 namespace AutoFrontline.Services;
 
-/// <summary>降下条件（敵・特殊オブジェクト）の範囲外ならマウントを試行。</summary>
 public static unsafe class TrackedPlayerSync
 {
     public static int LastNearbyEnemyCount { get; private set; }
@@ -48,14 +47,12 @@ public static unsafe class TrackedPlayerSync
 
         var radius = C.DismountEnemyDistanceMeters;
         if (hasNearbyEnemy && hasSpecialCombat)
-        {
-            return $"{enemyCount} enemy player(s) within {radius}m, {specialName} within {radius}m";
-        }
+            return I18n.Format("debug.mount.reason.both", enemyCount, radius, specialName);
 
         if (hasNearbyEnemy)
-            return $"{enemyCount} enemy player(s) within {radius}m";
+            return I18n.Format("debug.mount.reason.enemy", enemyCount, radius);
 
-        return $"{specialName} within {radius}m";
+        return I18n.Format("debug.mount.reason.special", specialName, radius);
     }
 
     private static void SyncMount()

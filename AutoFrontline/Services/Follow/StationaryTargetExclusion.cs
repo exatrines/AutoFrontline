@@ -14,7 +14,7 @@ internal readonly record struct FollowTargetExclusionDebugEntry(
     FollowTargetExclusionReason Reason,
     float RemainingSeconds);
 
-/// <summary>静止している追跡対象を設定時間、集団選定から除外する。</summary>
+/// <summary>Temporarily excludes stationary follow targets from group picks.</summary>
 internal static class StationaryTargetExclusion
 {
     private sealed class ExclusionEntry

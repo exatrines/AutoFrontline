@@ -5,7 +5,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>追跡対象の選定と移動先の算出（外部 API）。</summary>
+/// <summary>Follow selection and move destination (external API).</summary>
 public static class FollowTargetService
 {
     public static Vector3? LastMoveTarget => FollowTargetState.LastMoveTarget;

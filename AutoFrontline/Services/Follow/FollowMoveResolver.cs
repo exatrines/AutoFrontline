@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace AutoFrontline.Services;
 
-/// <summary>追跡アンカーから moveto 先を算出する。</summary>
+/// <summary>Resolves moveto from the tracked anchor.</summary>
 internal static class FollowMoveResolver
 {
     internal static Vector3? TryGetMoveTarget()

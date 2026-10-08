@@ -6,29 +6,28 @@ public static class GeneralTab
 {
     public static void Draw()
     {
-        MirageUi.SubHeader("Overview");
-        MirageUi.Text(
-            "Auto Frontline is a plugin that automatically joins and leaves Frontline duty.",
-            wrap: true);
+        MirageUi.Header("General");
+        MirageUi.SubHeader(I18n.Get("general.overview"));
+        MirageUi.Text(I18n.Get("general.overview.body"), wrap: true);
 
-        MirageUi.SubHeader("Required plugins");
+        MirageUi.SubHeader(I18n.Get("general.required"));
         foreach (var plugin in RequiredPlugins.Enumerate())
             DrawPluginStatus(plugin);
 
-        MirageUi.SubHeader("Mode");
-        MirageUi.Text("Loop Mode:", wrap: true);
+        MirageUi.SubHeader(I18n.Get("general.mode"));
+        MirageUi.Text(I18n.Get("general.mode.loop"), wrap: true);
         MirageUi.Text(
-            "Automatically queue, enter, and leave Frontline up to Max count.",
+            I18n.Get("general.mode.loop.body"),
             color: MirageUi.Color.Secondary,
             wrap: true);
-        MirageUi.Text("Manual Mode:", wrap: true);
+        MirageUi.Text(I18n.Get("general.mode.manual"), wrap: true);
         MirageUi.Text(
-            "Manually join Frontline on Contents Finder.",
+            I18n.Get("general.mode.manual.body"),
             color: MirageUi.Color.Secondary,
             wrap: true);
 
-        MirageUi.SubHeader("Recommended Job");
-        MirageUi.Text("BLM or other ranged DPS jobs.", wrap: true);
+        MirageUi.SubHeader(I18n.Get("general.job"));
+        MirageUi.Text(I18n.Get("general.job.body"), wrap: true);
     }
 
     private static void DrawPluginStatus(RequiredPlugin plugin)

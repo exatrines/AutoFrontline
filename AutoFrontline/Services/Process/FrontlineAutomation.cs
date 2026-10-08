@@ -4,7 +4,7 @@ using ECommons.GameHelpers;
 
 namespace AutoFrontline.Services;
 
-/// <summary>フレームごとの自動化オーケストレーション。</summary>
+/// <summary>Per-frame automation orchestration.</summary>
 public static class FrontlineAutomation
 {
     private static bool wasAlive = true;

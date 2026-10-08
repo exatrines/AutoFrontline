@@ -5,9 +5,8 @@ using ECommons.GameHelpers;
 namespace AutoFrontline.Services;
 
 /// <summary>
-/// 固定脱出座標が設定されたフィールドでは、一度スポーン除外圏を出た後に
-/// 再び除外圏内へ入ったとき固定座標へ moveto する。未設定フィールドでは集団行動のみ。
-/// 除外圏を一度出たかどうかは Return ゲートにも使用。
+/// After leaving spawn exclusion once, re-entry uses a fixed exit when configured.
+/// HasLeftSpawnExclusion also gates Return recovery.
 /// </summary>
 internal static class InitialMovementMode
 {
@@ -17,7 +16,6 @@ internal static class InitialMovementMode
 
     public static bool IsActive { get; private set; }
 
-    /// <summary>マッチ開始後、一度でもスポーン除外圏外に出た。</summary>
     public static bool HasLeftSpawnExclusion => hasLeftSpawnExclusion;
 
     public static bool HasFixedExitForCurrentTerritory =>

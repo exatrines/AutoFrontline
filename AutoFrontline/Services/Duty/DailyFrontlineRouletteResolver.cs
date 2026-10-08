@@ -2,7 +2,7 @@ using Lumina.Excel.Sheets;
 
 namespace AutoFrontline.Services;
 
-/// <summary>デイリーチャレンジ・フロントラインの ContentRoulette（コンテンツルーレット）を解決する。</summary>
+/// <summary>Resolves the Daily Frontline ContentRoulette row.</summary>
 internal static class DailyFrontlineRouletteResolver
 {
     private static byte? cachedRowId;
@@ -61,7 +61,7 @@ internal static class DailyFrontlineRouletteResolver
             "Frontline");
     }
 
-    /// <summary>CF リスト行 Text #6 など、短い表示名向けの厳密マッチ。</summary>
+    /// <summary>Exact match for short CF list names (Text #6).</summary>
     public static bool MatchesFrontlineListLabel(string text)
     {
         if (BilingualTextMatcher.IsNullOrWhiteSpace(text))
@@ -76,7 +76,7 @@ internal static class DailyFrontlineRouletteResolver
         return MatchesFrontlineListRowName(normalized);
     }
 
-    /// <summary>CF 詳細パネル名など、部分一致でよい場合。</summary>
+    /// <summary>Substring match for CF detail names.</summary>
     public static bool MatchesFrontlineDetailName(string text)
     {
         if (BilingualTextMatcher.IsNullOrWhiteSpace(text))
@@ -87,7 +87,7 @@ internal static class DailyFrontlineRouletteResolver
             || text.Contains("Frontline", StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>CF リスト行の部分一致（ツリー StringValues 用）。</summary>
+    /// <summary>Substring match for CF list tree StringValues.</summary>
     public static bool MatchesFrontlineListRowName(string text) =>
         !BilingualTextMatcher.IsNullOrWhiteSpace(text)
         && text.Contains("フロントライン", StringComparison.Ordinal);
