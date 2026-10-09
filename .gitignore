@@ -6,6 +6,7 @@
 .vs/
 artifacts/
 .cursor/
+.agents/
 
 ## OS
 Thumbs.db

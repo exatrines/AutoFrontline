@@ -1,9 +1,23 @@
-# Auto Frontline
+<p align="center">
+  <img src="AutoFrontline/Data/plugin-icon.png" alt="Auto Frontline icon" width="128" height="128">
+</p>
 
-[日本語](README.ja.md)
+<h1 align="center">Auto Frontline</h1>
 
 <p align="center">
-  <img src="AutoFrontline/Data/plugin-icon.png" width="128" alt="Auto Frontline">
+  English | <a href="docs/README.ja.md">日本語</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/exatrines/AutoFrontline/releases/latest">
+    <img src="https://img.shields.io/github/v/release/exatrines/AutoFrontline?label=Release&amp;labelColor=F280B6&amp;color=FFFFFF&amp;style=flat&amp;sort=date&amp;display_name=tag" alt="Release">
+  </a>
+  <a href="CHANGELOG.md">
+    <img src="https://img.shields.io/badge/Changelog-view-FFFFFF?labelColor=F280B6&amp;style=flat" alt="Changelog">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-AGPL--3.0--or--later-FFFFFF?labelColor=F280B6&amp;style=flat" alt="AGPL-3.0-or-later">
+  </a>
 </p>
 
 Auto Frontline is a Dalamud plugin that automates Frontline movement and combat with vnavmesh and Rotation Solver Reborn.
@@ -55,6 +69,6 @@ Required plugins: [vnavmesh](https://github.com/awgil/ffxiv_navmesh), [Rotation 
 
 [MirageUI](https://github.com/exatrines/MirageUI) is included as a git submodule for the shared UI kit. [ECommons](https://github.com/NightmareXIV/ECommons) is also a submodule.
 
-## License
+## Contributing
 
-[AGPL-3.0-or-later](https://www.gnu.org/licenses/agpl-3.0.html)
+Contributions are always welcome! Please see the [contribution guide](CONTRIBUTING.md).

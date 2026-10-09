@@ -1,176 +1,314 @@
 # Changelog
 
-## v1.6.0.0 - 2026-10-09
+All notable changes to this project will be documented in this file.
 
-- UI language: Follow client, or lock English / Japanese
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [Unreleased]
+
+### Added
+
+- Added `CONTRIBUTING.md`, synced from the shared contributing guide
+
+### Changed
+
+- README layout: centered plugin icon, English | Japanese switch, pink and white Release / Changelog / License badges, and a Contributing section
+- Moved the Japanese README to `docs/README.ja.md`
+- Restored the full GNU AGPL v3 license text
+
+## [1.6.0.0] - 2026-10-09
+
+### Added
+
+- Configurable UI language: follow the client, or lock English / Japanese
 - Plugin page (title-bar Heart or sidebar icon): Discord, Support, and GitHub
 - New plugin icon (AF)
+- English and Japanese README
+- Plugin icon and i18n files ship from `Data/`
+
+### Changed
+
 - Window, sidebar, and tab names stay English; plugin page copy stays English
-- Recommended job: use Black Mage or any ranged DPS; melee may not work well enough
+- Recommended job: use Black Mage or any ranged DPS; melee jobs may not work well enough
 - Latest MirageUI (TwoColumn, dropdowns, plugin page). Config footer links removed
-- README in English and Japanese
-- Icon and i18n files ship from `Data/`
 
-## v1.5.0.0 - 2026-07-03
+### Removed
 
-- 設定 UI を **MirageUI**（TwoColumn レイアウト）へ移行。サイドバーに General / Settings / Experimental / Debug、フッターに GitHub / OFUSE / Ko-fi リンク
-- プラグインアイコンを同梱（`Assets/AutoFrontlineIcon.png`）し、設定画面サイドバーに表示
-- Settings / Experimental / Debug を MirageUI コントロール（CheckboxGroup、Combo、Slider 等）に統一
-- Experimental: 軍師追従・戦闘モードを CheckboxGroup で説明文・子設定とまとめてインデント表示（OFF 時は無効化）
-- vnavmesh デバッグタブと `VNavmeshIpc` を削除
-- 旧 UI ヘルパー（`AflImGui`、`ConfigFooter`）を削除
+- GitHub Actions Release workflow; releases are cut locally
 
-## v1.4.1.0 - 2026-06-27
+## [1.5.0.0] - 2026-07-03
 
-- 集団行動: search radius 内が 1 名のとき、近い単独より **30m 以内 2 名以上の集団**（中心が最も近いもの）を優先。集団がなければ radius 内の単独を追従
-- 前提プラグイン未ロード時: 設定全体のグレーアウトを廃止。**Mode のみ Disable 固定**（その他の設定は編集可能）
+### Added
 
-## v1.4.0.0 - 2026-06-27
+- Bundled plugin icon (`Assets/AutoFrontlineIcon.png`) in the settings sidebar
 
-- コードベースをドメイン別フォルダに再構成（`Core` / `Services/*` / `UI/Tabs` 等）
-- Follow 系を `FollowModeSelector` / `FollowMoveResolver` / `GroupMoveSelector` に分割
-- 旧集団行動（Densest）を削除し、密集ロジックを常時有効化（ConfigVersion 3 移行）
-- 戦闘モード・軍師追従を Experimental タブのトグルに統合（`HostileModeEnabled` 追加）
-- 集団行動: **Group search radius** を Settings で設定可能（25〜100m、既定 75m）
-- 追従対象の除外: 静止 **5 回連続**、または同一対象 **連続 N 回** 選定（N は 1〜20、既定 10）で除外リストへ追加。除外時間は 0〜20 秒（既定 10 秒、0 = 無効）
-- unchanged 判定は再選定・静止除外のみに使用（moveto 抑制は廃止）
-- 初回脱出: 固定座標フィールドのみスポーン再入場時 moveto。未設定フィールドは集団行動。Return はスポーン圏を一度出た後に有効
-- Return（旧 Dejon）設定を Settings → Movement へ移動。英語表記を Return に統一
-- 特殊戦闘オブジェクト: アイスドトームリスは砕氷戦のみ、遊撃ドローンは制圧戦のみ
-- 死亡時 `/vnav stop` はフロントラインかつ自動化 ON のときのみ
-- `PlayerMovementGate` は詠唱中のみ moveto を抑制
-- Debug: AutoFrontline / vnavmesh サブタブ、除外追従対象リスト（名前・理由・残り時間）、Spawn / Mount / Return 情報
-- マウント: 敵・特殊オブジェクト範囲外なら常に乗車。Mount distance 設定を削除
+### Changed
 
-## v1.3.1.1 - 2026-06-22
+- Settings UI migrated to **MirageUI** (TwoColumn). Sidebar: General / Settings / Experimental / Debug, with GitHub / OFUSE / Ko-fi footer links
+- Settings / Experimental / Debug use MirageUI controls (CheckboxGroup, Combo, Slider, and similar)
+- Experimental: commander follow and combat mode use CheckboxGroup with help text and indented child settings (disabled when off)
 
-- 移動モード切替時の `/vnav stop` を廃止
-- Experimental: **Experimental Group Move**（自分 50m 内の密集中心。50m 内が 2 名未満のときは最寄り 2 名を候補に密集度判定。密集度半径 30m。同規模の集団が複数あるときは近いほうを優先。有効時は戦闘モードに入らない。付近 20m に敵がいないときのみマウント／いるときは降下。移動先距離は考慮しない）
-- 追従対象の座標が変わっていない（unchanged）とき、自分と追従対象が **20m 以上**離れている場合は moveto 抑制を行わず移動を継続
+### Removed
 
-## v1.3.1.0 - 2026-06-12
+- vnavmesh debug tab and `VNavmeshIpc`
+- Legacy UI helpers (`AflImGui`, `ConfigFooter`)
 
-- フィールド・オブ・グローリー（砕氷戦）: 初回スポーン脱出先を `(0, 0, 0)` に固定
+## [1.4.1.0] - 2026-06-27
 
-## v1.3.0.9 - 2026-06-12
+### Changed
 
-- ウォーコー・チーテ（演習戦）: 初回スポーン脱出先を `(-10, -15, 0)` に固定
+- Group movement: when only one ally is inside the search radius, prefer a cluster of **2 or more allies within 30m** whose center is closest. If none, follow the nearest singleton in radius
+- When required plugins are missing, only **Mode** is locked to Disable. Other settings stay editable (full-window grey-out removed)
 
-## v1.3.0.8 - 2026-06-12
+## [1.4.0.0] - 2026-06-27
 
-- オンサル・ハカイル（終節戦）: 初回スポーン脱出先を `(0, 0, 1)` に固定
+### Added
 
-## v1.3.0.7 - 2026-06-11
+- **Group search radius** in Settings (25–100m, default 75m)
+- Follow-target exclusion: after **5 consecutive** stationary picks, or the same target picked **N times in a row** (N is 1–20, default 10), add them to an exclusion list. Exclusion duration 0–20 seconds (default 10, 0 = off)
+- `HostileModeEnabled`: combat mode and commander follow as Experimental tab toggles
 
-- スタック判定の停滞時間を Experimental で **10〜30 秒**（既定 15 秒）のスライダーに変更
-- 軍師追従を Experimental タブのチェックボックスに分離（既定: オフ）
-- 自動ターゲットに遊撃ドローン（ModelCharaId `0xC19`）を追加（アイスドトームリスと同様）
-- 自動ターゲットに遊撃システム（ModelCharaId `0x233C`）を追加（アイスドトームリスと同様）
+### Changed
 
-## v1.3.0.6 - 2026-06-12
+- Code laid out by domain (`Core` / `Services/*` / `UI/Tabs`, and similar)
+- Follow split into `FollowModeSelector` / `FollowMoveResolver` / `GroupMoveSelector`
+- Always use cluster logic (legacy Densest group move removed; ConfigVersion 3 migration)
+- First spawn exit: fixed-coordinate fields moveto on re-entry; unconfigured fields use group movement. Return is enabled after leaving the spawn zone once
+- Return (formerly Dejon) settings moved to Settings → Movement. English label is Return
+- Special combat objects: Icedome Lis in Shatter only, Strike Drones in Seize only
+- `/vnav stop` on death only in Frontline while automation is on
+- `PlayerMovementGate` suppresses moveto only while casting
+- Debug: AutoFrontline / vnavmesh sub-tabs, excluded follow-target list (name, reason, remaining time), Spawn / Mount / Return info
+- Mount whenever outside enemy and special-object range
 
-- 集団行動中かつ移動先まで 5m 以上離れているとき、プレイヤー座標が 1m 以内のまま 10 秒経過したら `/vnav stop` → `/pvpaction デジョン` → SelectYesno で Yes
+### Removed
 
-## v1.3.0.5 - 2026-06-11
+- Mount distance setting
+- Unchanged-position check no longer suppresses moveto (used only for re-pick and stationary exclusion)
 
-- 死亡時（HP 0）に `/vnav stop` を実行
-- 移動モード切替時（集団 / 戦闘 / 軍師追従 / 初期移動）に `/vnav stop` してから次の `moveto` を発行
-- シールロック: 初回スポーン脱出先をマップ中央 `(0, 0, 0)` に固定（他フィールドは今後追加予定）
+## [1.3.1.1] - 2026-06-22
 
-## v1.3.0.4 - 2026-06-12
+### Added
 
-- 追従モードの優先順位を **戦闘 > 軍師追従 > 集団行動** に変更
-- 戦闘条件（敵 30m 内 ＋ その敵 30m 内に味方）成立中は、アライアンスチャットが来ても軍師追従を開始しない
-- 軍師追従中に戦闘条件が成立したら、即座に戦闘モードへ切替
-- 軍師追従の到着判定距離を **5m → 15m** に変更
-- 軍師追従開始時、すでに軍師から **15m 以内** にいる場合は軍師追従をスキップし、戦闘または集団行動へ
-- 戦闘モード: 敵 30m 内の味方判定を最大 10 人から **30m 内の味方全員** に拡張
+- Experimental: **Experimental Group Move** (cluster center within 50m of self. If fewer than 2 allies within 50m, the nearest 2 are candidates. Cluster radius 30m. Prefer the closer cluster of equal size. Combat mode is skipped while this is on. Mount only with no enemy within 20m; dismount when one is present. Destination distance is ignored)
 
-## v1.3.0.3 - 2026-06-12
+### Changed
 
-- 自動ターゲットにアイスドトームリス（ModelCharaId `0x1E0`）を追加（最寄り敵プレイヤーと比較して近い方を攻撃）
+- When a follow target's position is unchanged and you are **20m or more** away, keep moving instead of suppressing moveto
 
-## v1.3.0.2 - 2026-06-12
+### Removed
 
-- moveto 連続リフレッシュ対策（NaviStackGuard）を廃止し、**初期移動モード**に統一
-- スポーン中心から水平 **25m**（除外 20m + 5m）到達時の座標を初回脱出先として記録（試合ごとにリセット）
-- スポーン圏内に再入場したとき、初回脱出先へ moveto（通常追従より優先）
-- Debug: 追従モードに「初期移動（脱出先へ）」を表示、初期状態リセットボタンを追加
+- `/vnav stop` when switching movement modes
 
-## v1.3.0.1 - 2026-06-11
+## [1.3.1.0] - 2026-06-12
 
-- 実験的機能 PvPリミットブレイク（/pvpaction）の自動発動（Target指定可、発動間隔5秒のスロットルあり）
-- movetoコマンドの連続リフレッシュによるスタック時に自動対処（ランダム位置へ再発行）
-- スポーン除外ゾーンにてターゲットを行わないように
-- その他、細かな安定性改善・リファクタリング
+### Changed
 
-## v1.3.0.0 - 2026-06-02
+- Field of Glory (Shatter): first spawn-exit destination fixed at `(0, 0, 0)`
 
-- 集団モード・戦闘モードに加え、軍師追従モード（ `FollowCommander` ）を追加
-- 最も直近アライアンスチャットを発言したプレイヤーを LatestCommander として位置を取得し、そのプレイヤーとの距離が5mになるまで移動を続ける
-- 5m 以内に到達、または軍師の HP が 0 になったら軍師追従を終了し、戦闘モードまたは集団モードへ切替
-- Debug の Target に追従モード（集団行動 / 戦闘 / 軍師追従）を表示
+## [1.3.0.9] - 2026-06-12
 
-## v1.2.0.2 - 2026-06-02
+### Changed
 
-- フロントライン入室時の自キャラ座標を記録し、半径 **15m** 以内を移動先とする `moveto` を出さない（スポーン除外ゾーン）
-- 入室直後に `Player` が利用可能になる前のフレームでも Entry position を記録するよう修正
-- Debug の Movement に入室座標・除外状態を表示
+- The Fields of Glory (Secure): first spawn-exit destination fixed at `(-10, -15, 0)`
 
-## v1.2.0.1 - 2026-06-02
+## [1.3.0.8] - 2026-06-12
 
-- **Mode** の **Auto** を **Loop** に名称変更（enum 値は互換のため 2 のまま）
-- General タブのモード説明を更新
+### Changed
 
-## v1.2.0.0 - 2026-06-02
+- Onsal Hakair (Danshig Naadam): first spawn-exit destination fixed at `(0, 0, 1)`
 
-- **Enable** を廃止し、**Mode** コンボ（Disable / Manual / Loop）を追加
-- **Loop** モード: Start/Stop、MaxCount、入室カウント表示。Start 中は Mode 固定
-- Loop: コンテンツルーレットのデイリーチャレンジ・フロントラインへ参加申請 → 自動参加 → 試合終了後自動退出を MaxCount 回繰り返し（入室時にカウント +1）
-- コンテンツファインダー: リスト行 Text #6 と callback `3`（Leaf インデックス）でルーレット選択
-- マウント降下: 近傍の敵に加え、ModelCharaId `0x1E0`（アイスドトームリス）が **Dismount distance** 内にあるときも降下
-- 旧設定 `Enabled` は ConfigVersion 2 へ自動移行
+## [1.3.0.7] - 2026-06-11
 
-## v1.1.0.4 - 2026-06-02
+### Added
 
-- 設定に **Auto enter** / **Auto leave** を追加（デイリー参加確認・試合終了画面からの退出を個別に ON/OFF）
-- 自動退出を `EventFramework.LeaveCurrentContent` に変更（SelectYesno の退出確認ダイアログ操作を廃止）
-- Debug のステータス表示を Auto enter / Auto leave / 結果画面に合わせて更新
+- Auto-target Strike Drones (ModelCharaId `0xC19`), same as Icedome Lis
+- Auto-target Strike Systems (ModelCharaId `0x233C`), same as Icedome Lis
 
-## v1.1.0.3 - 2026-06-01
+### Changed
 
-- `AutoFrontline.csproj` の `<Version>` を `AssemblyVersion` と同期（1.1.0.3）
+- Stall duration for stuck detection is an Experimental slider **10–30 seconds** (default 15)
+- Commander follow is a separate Experimental checkbox (default: off)
 
-## v1.1.0.2 - 2026-06-01
+## [1.3.0.6] - 2026-06-12
 
-- アイコンパスを変更
-- `/autofrontline` 実行時にインターフェースの表示非表示をトグルで切り替えるように修正
+### Added
 
-## v1.1.0.1 - 2026-06-01
+- During group movement, if the destination is 5m or more away and the player stays within 1m for 10 seconds: `/vnav stop` → `/pvpaction デジョン` → SelectYesno Yes
 
-- v1.1.0.0 CHANGELOG の記載漏れを修正
+## [1.3.0.5] - 2026-06-11
 
-## v1.1.0.0 - 2026-06-01
+### Added
 
-- 制圧戦のテリトリー ID を 1273 に変更
-- 集団行動ルール: 自分から 30m 以内に敵がいないとき、味方（自分除く）の 50m 密集中心へ **1〜3m オフセット**で移動。敵 30m 内だが敵 30m 内に味方がいなければこちらへフォールバック
-- 戦闘時ルール: 自分から 30m 以内に敵がいるとき、**その敵から 30m 以内の味方（自分除く）**から最大 10 名を対象に、先頭〜最遠の間（**Hostile mode position**、0=先頭・1=最遠、**既定 0.5**）へ移動。追跡対象は先頭味方
-- 移動更新間隔: **Group movement refresh** / **Hostile mode refresh**（各 0.5〜3.0 秒）
-- マウント: 移動先まで **30m 以上**（設定可、0〜100）で乗馬、敵 **20m 以内**（設定可、0〜100）で降馬。マウントを選択できるように。
-- 最寄り敵プレイヤーを自動ターゲット（RSR の自動ターゲットは使用しない）
-- RSR の**ローテーション**を Manual 固定（Manual 以外のとき `/rotation manual`）
-- デイリーチャレンジ：フロントラインのマッチングのみ自動参加
-- 設定 UI を General / Settings / Debug に分割
-- 詠唱中は moveto しない。追跡対象が 0.1m 未満しか動いていなければ moveto をスキップ（更新間隔で再送）
-- DTRバーにプラグインの状態を表示　クリックでON/OFF切り替えも可
+- `/vnav stop` when HP is 0
+- Seal Rock: first spawn-exit destination fixed at map center `(0, 0, 0)` (other fields to follow)
 
-## v1.0.0.0 — 2026-05-29
+### Changed
 
-初回リリース。
+- `/vnav stop` before the next `moveto` when switching movement modes (group / combat / commander / initial)
 
-- フロントライン5フィールドで味方密集地点（50m）を追跡
-- vnavmesh / Rotation Solver Reborn 連携（必須プラグイン検証付き）
-- マウント・移動・試合終了時の自動退出
-- 設定 UI（General / Debug）
+## [1.3.0.4] - 2026-06-12
 
-[v1.6.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.5.0.0...v1.6.0.0
+### Changed
+
+- Follow priority is **combat > commander > group**
+- While combat conditions hold (enemy within 30m and an ally within 30m of that enemy), alliance chat does not start commander follow
+- Switch to combat immediately if combat conditions hold during commander follow
+- Commander follow arrival distance **5m → 15m**
+- Skip commander follow if already **within 15m** of the commander; fall back to combat or group
+- Combat mode: ally check around the enemy expanded from at most 10 players to **every ally within 30m**
+
+## [1.3.0.3] - 2026-06-12
+
+### Added
+
+- Auto-target Icedome Lis (ModelCharaId `0x1E0`) when closer than the nearest enemy player
+
+## [1.3.0.2] - 2026-06-12
+
+### Added
+
+- Record the position at horizontal **25m** from spawn center (exclusion 20m + 5m) as the first exit destination (reset each match)
+- On re-entering the spawn zone, moveto the first exit destination (ahead of normal follow)
+- Debug: follow mode shows initial movement (to exit), plus a reset-initial-state button
+
+### Changed
+
+- Replaced consecutive moveto-refresh handling (NaviStackGuard) with **initial movement mode**
+
+## [1.3.0.1] - 2026-06-11
+
+### Added
+
+- Experimental auto PvP Limit Break (`/pvpaction`; optional target; 5 second throttle)
+- Automatic recovery when consecutive moveto refreshes stack (reissue toward a random position)
+- Do not target inside the spawn exclusion zone
+
+### Changed
+
+- Smaller stability fixes and refactoring
+
+## [1.3.0.0] - 2026-06-02
+
+### Added
+
+- Commander follow (`FollowCommander`) in addition to group and combat
+- Track the most recent alliance-chat speaker as LatestCommander and move until 5m away
+- End commander follow at 5m or when the commander HP is 0, then return to combat or group
+- Debug Target shows follow mode (group / combat / commander)
+
+## [1.2.0.2] - 2026-06-02
+
+### Added
+
+- Record self position on Frontline entry and do not `moveto` within **15m** (spawn exclusion zone)
+- Debug Movement shows entry coordinates and exclusion state
+
+### Fixed
+
+- Record Entry position on frames before `Player` is available after zoning in
+
+## [1.2.0.1] - 2026-06-02
+
+### Changed
+
+- Mode **Auto** renamed to **Loop** (enum value stays 2 for compatibility)
+- General tab mode descriptions updated
+
+## [1.2.0.0] - 2026-06-02
+
+### Added
+
+- **Mode** combo (Disable / Manual / Loop) replacing Enable
+- **Loop**: Start/Stop, MaxCount, entry count. Mode is locked while Start is active
+- Loop: queue Daily Challenge Frontline roulette → auto enter → auto leave after the match, up to MaxCount (count +1 on entry)
+- Contents Finder: roulette row Text #6 and callback `3` (Leaf index)
+- Dismount also when ModelCharaId `0x1E0` (Icedome Lis) is within **Dismount distance**
+- Migrate legacy `Enabled` to ConfigVersion 2
+
+## [1.1.0.4] - 2026-06-02
+
+### Added
+
+- **Auto enter** / **Auto leave** settings (Daily confirm and leave-from-results independently)
+
+### Changed
+
+- Auto leave uses `EventFramework.LeaveCurrentContent` (SelectYesno leave dialog removed)
+- Debug status matches Auto enter / Auto leave / results screen
+
+## [1.1.0.3] - 2026-06-01
+
+### Changed
+
+- `AutoFrontline.csproj` `<Version>` synced with `AssemblyVersion` (1.1.0.3)
+
+## [1.1.0.2] - 2026-06-01
+
+### Changed
+
+- Icon path
+- `/autofrontline` with no args toggles the settings window
+
+## [1.1.0.1] - 2026-06-01
+
+### Fixed
+
+- Missing items in the v1.1.0.0 CHANGELOG
+
+## [1.1.0.0] - 2026-06-01
+
+### Added
+
+- Auto-target the nearest enemy player (RSR auto-target is not used)
+- Auto-enter Daily Challenge: Frontline matches only
+- Settings UI split into General / Settings / Debug
+- DTR bar shows plugin state; click toggles ON/OFF
+- Mount picker
+
+### Changed
+
+- Seize territory ID 1273
+- Group movement: with no enemy within 30m, move toward the 50m cluster center of allies (excluding self) with a **1–3m offset**. Fallback here if an enemy is within 30m but no ally is within 30m of that enemy
+- Combat: with an enemy within 30m, move among **allies within 30m of that enemy** (excluding self), up to 10, between nearest and farthest (**Hostile mode position**, 0 = nearest, 1 = farthest, **default 0.5**). Tracked target is the nearest ally
+- Movement refresh: **Group movement refresh** / **Hostile mode refresh** (0.5–3.0 seconds each)
+- Mount when destination is **30m or more** (0–100), dismount when an enemy is **within 20m** (0–100)
+- RSR **rotation** locked to Manual (`/rotation manual` when not already Manual)
+- Skip moveto while casting. Skip moveto if the tracked target moved less than 0.1m (resend on the refresh interval)
+
+## [1.0.0.0] - 2026-05-29
+
+### Added
+
+- Initial release
+- Track the densest ally cluster (50m) on five Frontline fields
+- vnavmesh / Rotation Solver Reborn integration with required-plugin checks
+- Mount, movement, and auto-leave at match end
+- Settings UI (General / Debug)
+
+[Unreleased]: https://github.com/exatrines/AutoFrontline/compare/v1.6.0.0...HEAD
+[1.6.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.5.0.0...v1.6.0.0
+[1.5.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.4.1.0...v1.5.0.0
+[1.4.1.0]: https://github.com/exatrines/AutoFrontline/compare/v1.4.0.0...v1.4.1.0
+[1.4.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.3.1.1...v1.4.0.0
+[1.3.1.1]: https://github.com/exatrines/AutoFrontline/compare/v1.3.1.0...v1.3.1.1
+[1.3.1.0]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.9...v1.3.1.0
+[1.3.0.9]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.8...v1.3.0.9
+[1.3.0.8]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.7...v1.3.0.8
+[1.3.0.7]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.6...v1.3.0.7
+[1.3.0.6]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.5...v1.3.0.6
+[1.3.0.5]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.4...v1.3.0.5
+[1.3.0.4]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.3...v1.3.0.4
+[1.3.0.3]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.2...v1.3.0.3
+[1.3.0.2]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.1...v1.3.0.2
+[1.3.0.1]: https://github.com/exatrines/AutoFrontline/compare/v1.3.0.0...v1.3.0.1
+[1.3.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.2.0.2...v1.3.0.0
+[1.2.0.2]: https://github.com/exatrines/AutoFrontline/compare/v1.2.0.1...v1.2.0.2
+[1.2.0.1]: https://github.com/exatrines/AutoFrontline/compare/v1.2.0.0...v1.2.0.1
+[1.2.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.1.0.4...v1.2.0.0
+[1.1.0.4]: https://github.com/exatrines/AutoFrontline/compare/v1.1.0.3...v1.1.0.4
+[1.1.0.3]: https://github.com/exatrines/AutoFrontline/compare/v1.1.0.2...v1.1.0.3
+[1.1.0.2]: https://github.com/exatrines/AutoFrontline/compare/v1.1.0.1...v1.1.0.2
+[1.1.0.1]: https://github.com/exatrines/AutoFrontline/compare/v1.1.0.0...v1.1.0.1
+[1.1.0.0]: https://github.com/exatrines/AutoFrontline/compare/v1.0.0.0...v1.1.0.0
+[1.0.0.0]: https://github.com/exatrines/AutoFrontline/releases/tag/v1.0.0.0
